@@ -1,0 +1,71 @@
+{
+	"name": "SaltShark Dev",
+	"dockerComposeFile": [
+		"../dev/docker-compose.yaml"
+	],
+	"service": "devcontainer",
+	"workspaceFolder": "/workspaces/saltshark",
+	"features": {
+		"ghcr.io/devcontainers/features/node:1": {
+			"version": "lts",
+			"pnpm": "latest"
+		},
+		"ghcr.io/devcontainers/features/docker-in-docker:2": {
+			"version": "latest",
+			"enableNonRootDocker": "true",
+			"moby": "true"
+		},
+		"ghcr.io/devcontainers/features/github-cli:1": {},
+		"ghcr.io/devcontainers/features/common-utils:2": {
+			"configureZshAsDefaultShell": true
+		}
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-python.python",
+				"ms-python.debugpy",
+				"ms-python.vscode-pylance",
+				"charliermarsh.ruff",
+				"tamasfe.even-better-toml",
+				"dbaeumer.vscode-eslint",
+				"esbenp.prettier-vscode",
+				"bradlc.vscode-tailwindcss",
+				"humao.rest-client",
+				"redhat.vscode-yaml",
+				"ms-azuretools.vscode-docker",
+				"ms-kubernetes-tools.vscode-kubernetes-tools",
+				"eamodio.gitlens",
+				"editorconfig.editorconfig",
+				"usernamehw.errorlens",
+				"yoavbls.pretty-ts-errors",
+				"formulahendry.auto-close-tag",
+				"formulahendry.auto-rename-tag",
+				"mikestead.dotenv",
+				"christian-kohler.path-intellisense"
+			],
+			"settings": {
+				"python.defaultInterpreterPath": "${workspaceFolder}/backend/.venv/bin/python",
+				"python.analysis.typeCheckingMode": "basic",
+				"editor.formatOnSave": true,
+				"[python]": {
+					"editor.defaultFormatter": "charliermarsh.ruff",
+					"editor.codeActionsOnSave": {
+						"source.organizeImports": "explicit"
+					}
+				},
+				"[typescript]": {
+					"editor.defaultFormatter": "esbenp.prettier-vscode"
+				},
+				"[javascript]": {
+					"editor.defaultFormatter": "esbenp.prettier-vscode"
+				},
+				"[json]": {
+					"editor.defaultFormatter": "esbenp.prettier-vscode"
+				}
+			}
+		}
+	},
+	"postCreateCommand": "bash .devcontainer/post-create.sh",
+	"remoteUser": "vscode"
+}
