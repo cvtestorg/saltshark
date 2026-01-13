@@ -9,7 +9,9 @@ import {
   Database, 
   Settings,
   Menu,
-  X
+  X,
+  FileCode,
+  Calendar,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -18,6 +20,9 @@ const navigation = [
   { name: "Dashboard", href: "/", icon: Server },
   { name: "Minions", href: "/minions", icon: Server },
   { name: "Jobs", href: "/jobs", icon: PlayCircle },
+  { name: "States", href: "/states", icon: FileCode },
+  { name: "Pillars", href: "/pillars", icon: Database },
+  { name: "Schedules", href: "/schedules", icon: Calendar },
   { name: "Grains", href: "/grains", icon: Database },
   { name: "Settings", href: "/settings", icon: Settings },
 ];

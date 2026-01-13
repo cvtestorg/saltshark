@@ -87,6 +87,58 @@ class SaltAPIClient:
         """Get pillars for a minion"""
         return await self.execute_command(minion_id, "pillar.items")
 
+    async def list_states(self) -> dict[str, Any]:
+        """List available states"""
+        return await self.execute_command("*", "state.show_top")
+
+    async def apply_state(
+        self, target: str, state: str, test: bool = False
+    ) -> dict[str, Any]:
+        """Apply a state to target minions"""
+        args = [state]
+        if test:
+            args.append("test=True")
+        return await self.execute_command(target, "state.apply", args)
+
+    async def get_state_status(self, target: str) -> dict[str, Any]:
+        """Get current state status for minions"""
+        return await self.execute_command(target, "state.show_sls")
+
+    async def highstate(self, target: str, test: bool = False) -> dict[str, Any]:
+        """Apply highstate to target minions"""
+        args = ["test=True"] if test else []
+        return await self.execute_command(target, "state.highstate", args)
+
+    async def list_pillar_keys(self, target: str = "*") -> dict[str, Any]:
+        """List all pillar keys"""
+        return await self.execute_command(target, "pillar.keys")
+
+    async def get_pillar_item(
+        self, target: str, key: str
+    ) -> dict[str, Any]:
+        """Get specific pillar item"""
+        return await self.execute_command(target, "pillar.get", [key])
+
+    async def list_schedules(self, target: str = "*") -> dict[str, Any]:
+        """List scheduled jobs"""
+        return await self.execute_command(target, "schedule.list")
+
+    async def add_schedule(
+        self, target: str, name: str, function: str, schedule: dict[str, Any]
+    ) -> dict[str, Any]:
+        """Add a scheduled job"""
+        payload = {
+            "client": "local",
+            "tgt": target,
+            "fun": "schedule.add",
+            "arg": [name, function, schedule],
+        }
+        return await self._request("POST", "/", json=payload)
+
+    async def delete_schedule(self, target: str, name: str) -> dict[str, Any]:
+        """Delete a scheduled job"""
+        return await self.execute_command(target, "schedule.delete", [name])
+
     async def close(self):
         """Close the HTTP client"""
         await self.client.aclose()
