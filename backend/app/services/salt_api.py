@@ -208,6 +208,107 @@ class SaltAPIClient:
         }
         return await self._request("POST", "/", json=payload)
 
+    async def list_beacons(self, target: str = "*") -> dict[str, Any]:
+        """List configured beacons"""
+        return await self.execute_command(target, "beacons.list")
+
+    async def add_beacon(
+        self, target: str, name: str, beacon_data: dict[str, Any]
+    ) -> dict[str, Any]:
+        """Add a beacon"""
+        return await self.execute_command(
+            target, "beacons.add", [name, beacon_data]
+        )
+
+    async def delete_beacon(self, target: str, name: str) -> dict[str, Any]:
+        """Delete a beacon"""
+        return await self.execute_command(target, "beacons.delete", [name])
+
+    async def list_returners(self) -> dict[str, Any]:
+        """List available returners"""
+        return await self.execute_command("*", "sys.list_returner_functions")
+
+    async def get_mine_data(self, target: str, function: str) -> dict[str, Any]:
+        """Get data from Salt Mine"""
+        return await self.execute_command(target, "mine.get", [target, function])
+
+    async def send_mine_data(self, target: str, function: str) -> dict[str, Any]:
+        """Send data to Salt Mine"""
+        return await self.execute_command(target, "mine.send", [function])
+
+    async def list_cloud_providers(self) -> dict[str, Any]:
+        """List configured cloud providers"""
+        payload = {
+            "client": "runner",
+            "fun": "cloud.list_providers",
+        }
+        return await self._request("POST", "/", json=payload)
+
+    async def list_cloud_profiles(self, provider: str | None = None) -> dict[str, Any]:
+        """List cloud profiles"""
+        payload = {
+            "client": "runner",
+            "fun": "cloud.list_profiles",
+        }
+        if provider:
+            payload["arg"] = [provider]
+        return await self._request("POST", "/", json=payload)
+
+    async def create_cloud_instance(
+        self, profile: str, names: list[str]
+    ) -> dict[str, Any]:
+        """Create cloud instances"""
+        payload = {
+            "client": "runner",
+            "fun": "cloud.profile",
+            "arg": [profile],
+            "kwarg": {"names": names},
+        }
+        return await self._request("POST", "/", json=payload)
+
+    async def ssh_execute(
+        self, target: str, function: str, roster: str = "flat"
+    ) -> dict[str, Any]:
+        """Execute command via Salt SSH"""
+        payload = {
+            "client": "ssh",
+            "tgt": target,
+            "fun": function,
+            "roster": roster,
+        }
+        return await self._request("POST", "/", json=payload)
+
+    async def get_events(self, tag: str = "") -> dict[str, Any]:
+        """Subscribe to Salt event stream"""
+        # Note: This would typically use SSE or WebSocket
+        # For now, return recent events
+        payload = {
+            "client": "runner",
+            "fun": "event.get_event",
+            "kwarg": {"tag": tag, "wait": 5},
+        }
+        return await self._request("POST", "/", json=payload)
+
+    async def list_nodegroups(self) -> dict[str, Any]:
+        """List configured nodegroups"""
+        # Nodegroups are typically defined in master config
+        # We can get them via runner
+        payload = {
+            "client": "runner",
+            "fun": "config.get",
+            "arg": ["nodegroups"],
+        }
+        return await self._request("POST", "/", json=payload)
+
+    async def list_reactor_systems(self) -> dict[str, Any]:
+        """List configured reactor systems"""
+        payload = {
+            "client": "runner",
+            "fun": "config.get",
+            "arg": ["reactor"],
+        }
+        return await self._request("POST", "/", json=payload)
+
     async def close(self):
         """Close the HTTP client"""
         await self.client.aclose()
