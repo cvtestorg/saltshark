@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.v1 import minions, jobs, grains, states, pillars, schedules
+from app.api.v1 import minions, jobs, grains, states, pillars, schedules, keys, runners, fileserver, orchestration
 from app.core.config import settings
 
 
@@ -39,6 +39,10 @@ app.include_router(grains.router, prefix="/api/v1", tags=["grains"])
 app.include_router(states.router, prefix="/api/v1", tags=["states"])
 app.include_router(pillars.router, prefix="/api/v1", tags=["pillars"])
 app.include_router(schedules.router, prefix="/api/v1", tags=["schedules"])
+app.include_router(keys.router, prefix="/api/v1", tags=["keys"])
+app.include_router(runners.router, prefix="/api/v1", tags=["runners"])
+app.include_router(fileserver.router, prefix="/api/v1", tags=["fileserver"])
+app.include_router(orchestration.router, prefix="/api/v1", tags=["orchestration"])
 
 
 @app.get("/")

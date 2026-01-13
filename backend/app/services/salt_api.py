@@ -139,6 +139,75 @@ class SaltAPIClient:
         """Delete a scheduled job"""
         return await self.execute_command(target, "schedule.delete", [name])
 
+    async def list_keys(self, status: str = "all") -> dict[str, Any]:
+        """List minion keys by status (accepted, denied, pending, rejected, all)"""
+        payload = {
+            "client": "wheel",
+            "fun": "key.list_all",
+        }
+        return await self._request("POST", "/", json=payload)
+
+    async def accept_key(self, minion_id: str) -> dict[str, Any]:
+        """Accept a pending minion key"""
+        payload = {
+            "client": "wheel",
+            "fun": "key.accept",
+            "match": minion_id,
+        }
+        return await self._request("POST", "/", json=payload)
+
+    async def delete_key(self, minion_id: str) -> dict[str, Any]:
+        """Delete a minion key"""
+        payload = {
+            "client": "wheel",
+            "fun": "key.delete",
+            "match": minion_id,
+        }
+        return await self._request("POST", "/", json=payload)
+
+    async def reject_key(self, minion_id: str) -> dict[str, Any]:
+        """Reject a pending minion key"""
+        payload = {
+            "client": "wheel",
+            "fun": "key.reject",
+            "match": minion_id,
+        }
+        return await self._request("POST", "/", json=payload)
+
+    async def run_salt_runner(self, runner: str, args: list[str] | None = None) -> dict[str, Any]:
+        """Execute a Salt runner"""
+        payload = {
+            "client": "runner",
+            "fun": runner,
+        }
+        if args:
+            payload["arg"] = args
+        return await self._request("POST", "/", json=payload)
+
+    async def list_file_roots(self) -> dict[str, Any]:
+        """List file server roots"""
+        return await self.execute_command("*", "cp.list_master")
+
+    async def list_files(self, environment: str = "base") -> dict[str, Any]:
+        """List files in file server"""
+        return await self.execute_command("*", "cp.list_master_files", [environment])
+
+    async def get_file_content(self, path: str) -> dict[str, Any]:
+        """Get content of a file from file server"""
+        return await self.execute_command("*", "cp.get_file_str", [f"salt://{path}"])
+
+    async def orchestrate(
+        self, orchestration: str, target: str = "*"
+    ) -> dict[str, Any]:
+        """Run a Salt orchestration"""
+        payload = {
+            "client": "runner",
+            "fun": "state.orchestrate",
+            "arg": [orchestration],
+            "kwarg": {"pillar": {"target": target}},
+        }
+        return await self._request("POST", "/", json=payload)
+
     async def close(self):
         """Close the HTTP client"""
         await self.client.aclose()

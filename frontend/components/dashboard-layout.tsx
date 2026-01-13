@@ -12,6 +12,10 @@ import {
   X,
   FileCode,
   Calendar,
+  Key,
+  Terminal,
+  FolderTree,
+  Workflow,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -23,6 +27,10 @@ const navigation = [
   { name: "States", href: "/states", icon: FileCode },
   { name: "Pillars", href: "/pillars", icon: Database },
   { name: "Schedules", href: "/schedules", icon: Calendar },
+  { name: "Keys", href: "/keys", icon: Key },
+  { name: "Runners", href: "/runners", icon: Terminal },
+  { name: "File Server", href: "/fileserver", icon: FolderTree },
+  { name: "Orchestration", href: "/orchestration", icon: Workflow },
   { name: "Grains", href: "/grains", icon: Database },
   { name: "Settings", href: "/settings", icon: Settings },
 ];
