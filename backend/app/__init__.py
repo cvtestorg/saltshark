@@ -1,0 +1,1 @@
+"""SaltShark Backend Application"""
