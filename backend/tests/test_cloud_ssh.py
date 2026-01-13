@@ -1,4 +1,5 @@
 """Tests for SSH and cloud endpoints"""
+
 from unittest.mock import AsyncMock, patch
 
 import pytest
@@ -24,7 +25,9 @@ def test_execute_ssh(client: TestClient, api_base_url: str):
         "roster": "flat",
     }
 
-    with patch("app.services.salt_api.salt_client.ssh_execute", new_callable=AsyncMock) as mock_ssh:
+    with patch(
+        "app.services.salt_api.salt_client.ssh_execute", new_callable=AsyncMock
+    ) as mock_ssh:
         mock_ssh.return_value = mock_response
         response = client.post(f"{api_base_url}/ssh/execute", json=ssh_data)
 
@@ -45,7 +48,9 @@ def test_list_cloud_providers(client: TestClient, api_base_url: str):
         ]
     }
 
-    with patch("app.services.salt_api.salt_client.list_cloud_providers", new_callable=AsyncMock) as mock_list:
+    with patch(
+        "app.services.salt_api.salt_client.list_cloud_providers", new_callable=AsyncMock
+    ) as mock_list:
         mock_list.return_value = mock_response
         response = client.get(f"{api_base_url}/cloud/providers")
 
@@ -65,7 +70,9 @@ def test_list_cloud_profiles(client: TestClient, api_base_url: str):
         ]
     }
 
-    with patch("app.services.salt_api.salt_client.list_cloud_profiles", new_callable=AsyncMock) as mock_list:
+    with patch(
+        "app.services.salt_api.salt_client.list_cloud_profiles", new_callable=AsyncMock
+    ) as mock_list:
         mock_list.return_value = mock_response
         response = client.get(f"{api_base_url}/cloud/profiles")
 
@@ -93,7 +100,10 @@ def test_create_cloud_instance(client: TestClient, api_base_url: str):
         "names": ["web-01", "web-02"],
     }
 
-    with patch("app.services.salt_api.salt_client.create_cloud_instance", new_callable=AsyncMock) as mock_create:
+    with patch(
+        "app.services.salt_api.salt_client.create_cloud_instance",
+        new_callable=AsyncMock,
+    ) as mock_create:
         mock_create.return_value = mock_response
         response = client.post(f"{api_base_url}/cloud/instances", json=instance_data)
 

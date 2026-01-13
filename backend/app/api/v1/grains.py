@@ -1,4 +1,5 @@
 """Grains and Pillars API endpoints"""
+
 from fastapi import APIRouter, HTTPException
 
 from app.schemas.grains import GrainsData, PillarsData

@@ -1,4 +1,5 @@
 """Job templates API endpoints."""
+
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -58,17 +59,16 @@ async def list_templates(
 ) -> list[JobTemplate]:
     """List all job templates."""
     templates = list(templates_db.values())
-    
+
     # Filter by category
     if category:
         templates = [t for t in templates if t.category == category]
-    
+
     # Filter by visibility (show public + own templates)
     templates = [
-        t for t in templates
-        if t.is_public or t.created_by == current_user.username
+        t for t in templates if t.is_public or t.created_by == current_user.username
     ]
-    
+
     return templates
 
 
@@ -79,7 +79,7 @@ async def create_template(
 ) -> JobTemplate:
     """Create a new job template."""
     template_id = str(len(templates_db) + 1)
-    
+
     new_template = JobTemplate(
         id=template_id,
         name=template.name,
@@ -92,7 +92,7 @@ async def create_template(
         is_public=template.is_public,
         created_by=current_user.username,
     )
-    
+
     templates_db[template_id] = new_template
     return new_template
 
@@ -106,11 +106,11 @@ async def get_template(
     template = templates_db.get(template_id)
     if not template:
         raise HTTPException(status_code=404, detail="Template not found")
-    
+
     # Check access
     if not template.is_public and template.created_by != current_user.username:
         raise HTTPException(status_code=403, detail="Access denied")
-    
+
     return template
 
 
@@ -124,11 +124,11 @@ async def update_template(
     template = templates_db.get(template_id)
     if not template:
         raise HTTPException(status_code=404, detail="Template not found")
-    
+
     # Check permissions (only creator or admin can update)
     if template.created_by != current_user.username and current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Access denied")
-    
+
     # Update fields
     if template_update.name is not None:
         template.name = template_update.name
@@ -146,7 +146,7 @@ async def update_template(
         template.category = template_update.category
     if template_update.is_public is not None:
         template.is_public = template_update.is_public
-    
+
     templates_db[template_id] = template
     return template
 
@@ -160,11 +160,11 @@ async def delete_template(
     template = templates_db.get(template_id)
     if not template:
         raise HTTPException(status_code=404, detail="Template not found")
-    
+
     # Check permissions
     if template.created_by != current_user.username and current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Access denied")
-    
+
     del templates_db[template_id]
     return {"message": "Template deleted successfully"}
 
@@ -179,17 +179,19 @@ async def execute_template(
     template = templates_db.get(template_id)
     if not template:
         raise HTTPException(status_code=404, detail="Template not found")
-    
+
     # Check access
     if not template.is_public and template.created_by != current_user.username:
         raise HTTPException(status_code=403, detail="Access denied")
-    
+
     # Prepare job parameters
     target = overrides.get("target", template.target) if overrides else template.target
-    function = overrides.get("function", template.function) if overrides else template.function
+    function = (
+        overrides.get("function", template.function) if overrides else template.function
+    )
     args = overrides.get("args", template.args) if overrides else template.args
     kwargs = overrides.get("kwargs", template.kwargs) if overrides else template.kwargs
-    
+
     # Execute via Salt API
     salt_client = SaltAPIClient()
     result = await salt_client.execute_job(
@@ -198,7 +200,7 @@ async def execute_template(
         args=args,
         kwargs=kwargs,
     )
-    
+
     return {
         "template_id": template_id,
         "template_name": template.name,

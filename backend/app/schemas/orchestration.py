@@ -1,4 +1,5 @@
 """Orchestration schemas"""
+
 from typing import Any
 
 from pydantic import BaseModel, Field
@@ -16,4 +17,6 @@ class OrchestrationResult(BaseModel):
 
     orchestration: str = Field(..., description="Orchestration name")
     success: bool = Field(..., description="Execution success status")
-    result: dict[str, Any] = Field(default_factory=dict, description="Orchestration result")
+    result: dict[str, Any] = Field(
+        default_factory=dict, description="Orchestration result"
+    )

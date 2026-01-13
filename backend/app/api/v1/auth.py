@@ -1,4 +1,5 @@
 """Authentication and authorization API endpoints."""
+
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
@@ -59,7 +60,9 @@ def authenticate_user(username: str, password: str) -> UserInDB | None:
     return user
 
 
-def create_access_token(data: dict[str, Any], expires_delta: timedelta | None = None) -> str:
+def create_access_token(
+    data: dict[str, Any], expires_delta: timedelta | None = None
+) -> str:
     """Create JWT access token."""
     to_encode = data.copy()
     if expires_delta:
@@ -85,14 +88,16 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
             raise credentials_exception
     except JWTError:
         raise credentials_exception
-    
+
     user = get_user(username)
     if user is None:
         raise credentials_exception
     return User.model_validate(user)
 
 
-async def get_current_active_user(current_user: User = Depends(get_current_user)) -> User:
+async def get_current_active_user(
+    current_user: User = Depends(get_current_user),
+) -> User:
     """Get current active user."""
     if not current_user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
@@ -101,13 +106,16 @@ async def get_current_active_user(current_user: User = Depends(get_current_user)
 
 def require_role(*roles: str):  # type: ignore[no-untyped-def]
     """Dependency to check user has required role."""
-    async def role_checker(current_user: User = Depends(get_current_active_user)) -> User:
+
+    async def role_checker(
+        current_user: User = Depends(get_current_active_user),
+    ) -> User:
         if current_user.role not in roles:
             raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Insufficient permissions"
+                status_code=status.HTTP_403_FORBIDDEN, detail="Insufficient permissions"
             )
         return current_user
+
     return role_checker
 
 
@@ -151,25 +159,22 @@ async def read_users_me(current_user: User = Depends(get_current_active_user)) -
 
 
 @router.get("/users", response_model=list[User])
-async def list_users(
-    current_user: User = Depends(require_role("admin"))
-) -> list[User]:
+async def list_users(current_user: User = Depends(require_role("admin"))) -> list[User]:
     """List all users (admin only)."""
     return [User.model_validate(u) for u in fake_users_db.values()]
 
 
 @router.post("/users", response_model=User)
 async def create_user(
-    user_create: UserCreate,
-    current_user: User = Depends(require_role("admin"))
+    user_create: UserCreate, current_user: User = Depends(require_role("admin"))
 ) -> User:
     """Create new user (admin only)."""
     if user_create.username in fake_users_db:
         raise HTTPException(status_code=400, detail="Username already exists")
-    
+
     user_id = str(len(fake_users_db) + 1)
     hashed_password = get_password_hash(user_create.password)
-    
+
     user_db = UserInDB(
         id=user_id,
         username=user_create.username,
@@ -188,7 +193,7 @@ async def create_user(
 async def update_user(
     user_id: str,
     user_update: UserUpdate,
-    current_user: User = Depends(require_role("admin"))
+    current_user: User = Depends(require_role("admin")),
 ) -> User:
     """Update user (admin only)."""
     # Find user by ID
@@ -199,10 +204,10 @@ async def update_user(
             user = u
             username_key = key
             break
-    
+
     if not user or not username_key:
         raise HTTPException(status_code=404, detail="User not found")
-    
+
     # Update fields
     if user_update.email:
         user.email = user_update.email
@@ -214,15 +219,14 @@ async def update_user(
         user.is_active = user_update.is_active
     if user_update.password:
         user.hashed_password = get_password_hash(user_update.password)
-    
+
     fake_users_db[username_key] = user
     return User.model_validate(user)
 
 
 @router.delete("/users/{user_id}")
 async def delete_user(
-    user_id: str,
-    current_user: User = Depends(require_role("admin"))
+    user_id: str, current_user: User = Depends(require_role("admin"))
 ) -> dict[str, str]:
     """Delete user (admin only)."""
     # Find and delete user
@@ -232,5 +236,5 @@ async def delete_user(
                 raise HTTPException(status_code=400, detail="Cannot delete yourself")
             del fake_users_db[key]
             return {"message": "User deleted successfully"}
-    
+
     raise HTTPException(status_code=404, detail="User not found")

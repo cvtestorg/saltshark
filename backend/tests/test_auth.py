@@ -1,4 +1,5 @@
 """Tests for authentication endpoints"""
+
 from datetime import datetime, timezone
 
 import pytest

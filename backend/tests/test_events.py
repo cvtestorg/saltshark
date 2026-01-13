@@ -1,4 +1,5 @@
 """Tests for event stream and targeting endpoints"""
+
 from unittest.mock import AsyncMock, patch
 
 import pytest
@@ -16,7 +17,9 @@ def test_get_events(client: TestClient, api_base_url: str):
         ]
     }
 
-    with patch("app.services.salt_api.salt_client.get_events", new_callable=AsyncMock) as mock_get:
+    with patch(
+        "app.services.salt_api.salt_client.get_events", new_callable=AsyncMock
+    ) as mock_get:
         mock_get.return_value = mock_response
         response = client.get(f"{api_base_url}/events")
 
@@ -30,7 +33,9 @@ def test_get_events_with_tag(client: TestClient, api_base_url: str):
     """Test getting events with tag filter"""
     mock_response = {"return": [{"tag": "salt/job/*", "data": {}}]}
 
-    with patch("app.services.salt_api.salt_client.get_events", new_callable=AsyncMock) as mock_get:
+    with patch(
+        "app.services.salt_api.salt_client.get_events", new_callable=AsyncMock
+    ) as mock_get:
         mock_get.return_value = mock_response
         response = client.get(f"{api_base_url}/events?tag=salt/job/*")
 
@@ -50,7 +55,9 @@ def test_list_nodegroups(client: TestClient, api_base_url: str):
         ]
     }
 
-    with patch("app.services.salt_api.salt_client.list_nodegroups", new_callable=AsyncMock) as mock_list:
+    with patch(
+        "app.services.salt_api.salt_client.list_nodegroups", new_callable=AsyncMock
+    ) as mock_list:
         mock_list.return_value = mock_response
         response = client.get(f"{api_base_url}/nodegroups")
 
@@ -70,7 +77,9 @@ def test_list_reactors(client: TestClient, api_base_url: str):
         ]
     }
 
-    with patch("app.services.salt_api.salt_client.list_reactor_systems", new_callable=AsyncMock) as mock_list:
+    with patch(
+        "app.services.salt_api.salt_client.list_reactor_systems", new_callable=AsyncMock
+    ) as mock_list:
         mock_list.return_value = mock_response
         response = client.get(f"{api_base_url}/reactor")
 

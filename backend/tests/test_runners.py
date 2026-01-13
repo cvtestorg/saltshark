@@ -1,4 +1,5 @@
 """Tests for Salt runners endpoints"""
+
 from unittest.mock import AsyncMock, patch
 
 import pytest
@@ -21,7 +22,9 @@ def test_execute_runner(client: TestClient, api_base_url: str):
         "args": [],
     }
 
-    with patch("app.services.salt_api.salt_client.run_salt_runner", new_callable=AsyncMock) as mock_run:
+    with patch(
+        "app.services.salt_api.salt_client.run_salt_runner", new_callable=AsyncMock
+    ) as mock_run:
         mock_run.return_value = mock_response
         response = client.post(f"{api_base_url}/runners/execute", json=runner_data)
 
@@ -41,7 +44,9 @@ def test_execute_runner_with_args(client: TestClient, api_base_url: str):
         "args": ["3005"],
     }
 
-    with patch("app.services.salt_api.salt_client.run_salt_runner", new_callable=AsyncMock) as mock_run:
+    with patch(
+        "app.services.salt_api.salt_client.run_salt_runner", new_callable=AsyncMock
+    ) as mock_run:
         mock_run.return_value = mock_response
         response = client.post(f"{api_base_url}/runners/execute", json=runner_data)
 

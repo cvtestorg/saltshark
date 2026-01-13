@@ -2,6 +2,7 @@
 
 This module provides a client for interacting with the SaltStack API.
 """
+
 from typing import Any
 
 import httpx
@@ -135,9 +136,7 @@ class SaltAPIClient:
         """List all pillar keys"""
         return await self.execute_command(target, "pillar.keys")
 
-    async def get_pillar_item(
-        self, target: str, key: str
-    ) -> dict[str, Any]:
+    async def get_pillar_item(self, target: str, key: str) -> dict[str, Any]:
         """Get specific pillar item"""
         return await self.execute_command(target, "pillar.get", [key])
 
@@ -196,7 +195,9 @@ class SaltAPIClient:
         }
         return await self._request("POST", "/", json=payload)
 
-    async def run_salt_runner(self, runner: str, args: list[str] | None = None) -> dict[str, Any]:
+    async def run_salt_runner(
+        self, runner: str, args: list[str] | None = None
+    ) -> dict[str, Any]:
         """Execute a Salt runner"""
         payload: dict[str, Any] = {
             "client": "runner",

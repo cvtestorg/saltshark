@@ -1,4 +1,5 @@
 """Job template schemas."""
+
 from typing import Any
 
 from pydantic import BaseModel
@@ -6,6 +7,7 @@ from pydantic import BaseModel
 
 class JobTemplate(BaseModel):
     """Job template model."""
+
     id: str
     name: str
     description: str | None = None
@@ -20,6 +22,7 @@ class JobTemplate(BaseModel):
 
 class JobTemplateCreate(BaseModel):
     """Job template creation request."""
+
     name: str
     description: str | None = None
     target: str
@@ -32,6 +35,7 @@ class JobTemplateCreate(BaseModel):
 
 class JobTemplateUpdate(BaseModel):
     """Job template update request."""
+
     name: str | None = None
     description: str | None = None
     target: str | None = None

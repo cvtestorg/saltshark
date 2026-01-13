@@ -1,4 +1,5 @@
 """Tests for state management endpoints"""
+
 from unittest.mock import AsyncMock, patch
 
 import pytest
@@ -18,7 +19,9 @@ def test_list_states(client: TestClient, api_base_url: str):
         ]
     }
 
-    with patch("app.services.salt_api.salt_client.list_states", new_callable=AsyncMock) as mock_list:
+    with patch(
+        "app.services.salt_api.salt_client.list_states", new_callable=AsyncMock
+    ) as mock_list:
         mock_list.return_value = mock_response
         response = client.get(f"{api_base_url}/states")
 
@@ -50,7 +53,9 @@ def test_apply_state(client: TestClient, api_base_url: str):
         "test": False,
     }
 
-    with patch("app.services.salt_api.salt_client.apply_state", new_callable=AsyncMock) as mock_apply:
+    with patch(
+        "app.services.salt_api.salt_client.apply_state", new_callable=AsyncMock
+    ) as mock_apply:
         mock_apply.return_value = mock_response
         response = client.post(f"{api_base_url}/states/apply", json=request_data)
 
@@ -73,7 +78,9 @@ def test_apply_state_test_mode(client: TestClient, api_base_url: str):
         "test": True,
     }
 
-    with patch("app.services.salt_api.salt_client.apply_state", new_callable=AsyncMock) as mock_apply:
+    with patch(
+        "app.services.salt_api.salt_client.apply_state", new_callable=AsyncMock
+    ) as mock_apply:
         mock_apply.return_value = mock_response
         response = client.post(f"{api_base_url}/states/apply", json=request_data)
 
@@ -88,12 +95,16 @@ def test_apply_state_test_mode(client: TestClient, api_base_url: str):
 def test_apply_highstate(client: TestClient, api_base_url: str):
     """Test applying highstate"""
     mock_response = {
-        "return": [{"minion-1": {"state1": {"result": True}, "state2": {"result": True}}}]
+        "return": [
+            {"minion-1": {"state1": {"result": True}, "state2": {"result": True}}}
+        ]
     }
 
     request_data = {"target": "*", "test": False}
 
-    with patch("app.services.salt_api.salt_client.highstate", new_callable=AsyncMock) as mock_highstate:
+    with patch(
+        "app.services.salt_api.salt_client.highstate", new_callable=AsyncMock
+    ) as mock_highstate:
         mock_highstate.return_value = mock_response
         response = client.post(f"{api_base_url}/states/highstate", json=request_data)
 
@@ -109,7 +120,9 @@ def test_apply_highstate_test_mode(client: TestClient, api_base_url: str):
 
     request_data = {"target": "*", "test": True}
 
-    with patch("app.services.salt_api.salt_client.highstate", new_callable=AsyncMock) as mock_highstate:
+    with patch(
+        "app.services.salt_api.salt_client.highstate", new_callable=AsyncMock
+    ) as mock_highstate:
         mock_highstate.return_value = mock_response
         response = client.post(f"{api_base_url}/states/highstate", json=request_data)
 
@@ -131,7 +144,9 @@ def test_get_state_status(client: TestClient, api_base_url: str):
         ]
     }
 
-    with patch("app.services.salt_api.salt_client.get_state_status", new_callable=AsyncMock) as mock_status:
+    with patch(
+        "app.services.salt_api.salt_client.get_state_status", new_callable=AsyncMock
+    ) as mock_status:
         mock_status.return_value = mock_response
         response = client.get(f"{api_base_url}/states/status/minion-1")
 

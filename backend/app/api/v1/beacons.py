@@ -1,4 +1,5 @@
 """Beacons API endpoints"""
+
 from typing import Any
 
 from fastapi import APIRouter, HTTPException

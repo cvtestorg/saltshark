@@ -1,4 +1,5 @@
 """Compliance monitoring API endpoints."""
+
 from typing import Any, cast
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -70,7 +71,9 @@ async def get_minion_compliance(
     current_user: User = Depends(get_current_active_user),
 ) -> MinionCompliance:
     """Get compliance status for a specific minion."""
-    minions_data = cast(dict[str, MinionCompliance], mock_compliance_data.get("minions", {}))
+    minions_data = cast(
+        dict[str, MinionCompliance], mock_compliance_data.get("minions", {})
+    )
     compliance = minions_data.get(minion_id)
     if not compliance:
         raise HTTPException(status_code=404, detail="Minion not found")
@@ -83,13 +86,17 @@ async def get_failed_states(
 ) -> list[dict[str, Any]]:
     """Get all failed states across all minions."""
     failed_states: list[dict[str, Any]] = []
-    minions_data = cast(dict[str, MinionCompliance], mock_compliance_data.get("minions", {}))
+    minions_data = cast(
+        dict[str, MinionCompliance], mock_compliance_data.get("minions", {})
+    )
     for minion_id, compliance in minions_data.items():
         for failed_state in compliance.failed_states:
-            failed_states.append({
-                "minion_id": minion_id,
-                **failed_state.model_dump(),
-            })
+            failed_states.append(
+                {
+                    "minion_id": minion_id,
+                    **failed_state.model_dump(),
+                }
+            )
     return failed_states
 
 
@@ -121,11 +128,12 @@ async def remediate_compliance(
     compliance = mock_compliance_data["minions"].get(minion_id)
     if not compliance:
         from fastapi import HTTPException
+
         raise HTTPException(status_code=404, detail="Minion not found")
-    
+
     if compliance.is_compliant:
         return {"message": "Minion is already compliant", "minion_id": minion_id}
-    
+
     # In real implementation, this would trigger highstate or specific state fixes
     return {
         "message": "Remediation initiated",

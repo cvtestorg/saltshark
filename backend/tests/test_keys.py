@@ -1,4 +1,5 @@
 """Tests for minion key management endpoints"""
+
 from unittest.mock import AsyncMock, patch
 
 import pytest
@@ -22,7 +23,9 @@ def test_list_keys(client: TestClient, api_base_url: str):
         ]
     }
 
-    with patch("app.services.salt_api.salt_client.list_keys", new_callable=AsyncMock) as mock_list:
+    with patch(
+        "app.services.salt_api.salt_client.list_keys", new_callable=AsyncMock
+    ) as mock_list:
         mock_list.return_value = mock_response
         response = client.get(f"{api_base_url}/keys")
 
@@ -35,7 +38,9 @@ def test_accept_key(client: TestClient, api_base_url: str):
     """Test accepting a pending minion key"""
     mock_response = {"return": [{"data": {"return": {"minions": ["minion-3"]}}}]}
 
-    with patch("app.services.salt_api.salt_client.accept_key", new_callable=AsyncMock) as mock_accept:
+    with patch(
+        "app.services.salt_api.salt_client.accept_key", new_callable=AsyncMock
+    ) as mock_accept:
         mock_accept.return_value = mock_response
         response = client.post(f"{api_base_url}/keys/minion-3/accept")
 
@@ -48,9 +53,13 @@ def test_accept_key(client: TestClient, api_base_url: str):
 
 def test_reject_key(client: TestClient, api_base_url: str):
     """Test rejecting a pending minion key"""
-    mock_response = {"return": [{"data": {"return": {"minions_rejected": ["minion-4"]}}}]}
+    mock_response = {
+        "return": [{"data": {"return": {"minions_rejected": ["minion-4"]}}}]
+    }
 
-    with patch("app.services.salt_api.salt_client.reject_key", new_callable=AsyncMock) as mock_reject:
+    with patch(
+        "app.services.salt_api.salt_client.reject_key", new_callable=AsyncMock
+    ) as mock_reject:
         mock_reject.return_value = mock_response
         response = client.post(f"{api_base_url}/keys/minion-4/reject")
 
@@ -65,7 +74,9 @@ def test_delete_key(client: TestClient, api_base_url: str):
     """Test deleting a minion key"""
     mock_response = {"return": [{"data": {"return": {"minions": []}}}]}
 
-    with patch("app.services.salt_api.salt_client.delete_key", new_callable=AsyncMock) as mock_delete:
+    with patch(
+        "app.services.salt_api.salt_client.delete_key", new_callable=AsyncMock
+    ) as mock_delete:
         mock_delete.return_value = mock_response
         response = client.delete(f"{api_base_url}/keys/minion-5")
 

@@ -1,4 +1,5 @@
 """Event stream and targeting API endpoints"""
+
 from typing import Any
 
 from fastapi import APIRouter, HTTPException

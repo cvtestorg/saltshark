@@ -1,4 +1,5 @@
 """Minions API endpoints"""
+
 from fastapi import APIRouter, HTTPException
 
 from app.schemas.minion import MinionDetail, MinionList, MinionStatus

@@ -1,4 +1,5 @@
 """Tests for grains and pillars endpoints"""
+
 from unittest.mock import AsyncMock, patch
 
 import pytest
@@ -20,7 +21,9 @@ def test_get_grains(client: TestClient, api_base_url: str):
         ]
     }
 
-    with patch("app.services.salt_api.salt_client.get_grains", new_callable=AsyncMock) as mock_get:
+    with patch(
+        "app.services.salt_api.salt_client.get_grains", new_callable=AsyncMock
+    ) as mock_get:
         mock_get.return_value = mock_response
         response = client.get(f"{api_base_url}/minions/minion-1/grains")
 
@@ -57,7 +60,9 @@ def test_get_pillars(client: TestClient, api_base_url: str):
         ]
     }
 
-    with patch("app.services.salt_api.salt_client.get_pillars", new_callable=AsyncMock) as mock_get:
+    with patch(
+        "app.services.salt_api.salt_client.get_pillars", new_callable=AsyncMock
+    ) as mock_get:
         mock_get.return_value = mock_response
         response = client.get(f"{api_base_url}/minions/minion-1/pillars")
 
@@ -72,7 +77,9 @@ def test_list_pillar_keys(client: TestClient, api_base_url: str):
     """Test listing pillar keys"""
     mock_response = {"return": [{"minion-1": ["app_config", "database", "users"]}]}
 
-    with patch("app.services.salt_api.salt_client.list_pillar_keys", new_callable=AsyncMock) as mock_list:
+    with patch(
+        "app.services.salt_api.salt_client.list_pillar_keys", new_callable=AsyncMock
+    ) as mock_list:
         mock_list.return_value = mock_response
         response = client.get(f"{api_base_url}/pillars/minion-1/keys")
 
@@ -86,7 +93,9 @@ def test_get_pillar_item(client: TestClient, api_base_url: str):
     """Test getting specific pillar item"""
     mock_response = {"return": [{"minion-1": {"port": 8080, "debug": False}}]}
 
-    with patch("app.services.salt_api.salt_client.get_pillar_item", new_callable=AsyncMock) as mock_get:
+    with patch(
+        "app.services.salt_api.salt_client.get_pillar_item", new_callable=AsyncMock
+    ) as mock_get:
         mock_get.return_value = mock_response
         response = client.get(f"{api_base_url}/pillars/minion-1/item/app_config")
 
@@ -97,11 +106,11 @@ def test_get_pillar_item(client: TestClient, api_base_url: str):
 
 def test_get_all_pillars(client: TestClient, api_base_url: str):
     """Test getting all pillars for a minion"""
-    mock_response = {
-        "return": [{"minion-1": {"key1": "value1", "key2": "value2"}}]
-    }
+    mock_response = {"return": [{"minion-1": {"key1": "value1", "key2": "value2"}}]}
 
-    with patch("app.services.salt_api.salt_client.get_pillars", new_callable=AsyncMock) as mock_get:
+    with patch(
+        "app.services.salt_api.salt_client.get_pillars", new_callable=AsyncMock
+    ) as mock_get:
         mock_get.return_value = mock_response
         response = client.get(f"{api_base_url}/pillars/minion-1")
 
