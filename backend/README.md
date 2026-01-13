@@ -140,12 +140,9 @@ Type check:
 mypy .
 ```
 
-## Mock Data
+## Requirements
 
-The application includes mock data support for development when the Salt API is not available. The mock data includes:
-
-- 3 sample minions (Ubuntu, CentOS, Debian)
-- 2 sample jobs (test.ping, state.apply)
+The application requires a running SaltStack Master with Salt API enabled. Configure your Salt API endpoint in the `.env` file.
 
 ## License
 

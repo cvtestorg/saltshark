@@ -8,7 +8,7 @@ A modern, beautiful web UI for SaltStack/SaltProject built with Next.js 16 and F
 
 ### Backend (FastAPI + Python)
 - ✅ RESTful API for Salt management
-- ✅ Salt API client with mock data support
+- ✅ Salt API client
 - ✅ Type-safe with Pydantic v2
 - ✅ 76%+ test coverage
 - ✅ OpenAPI documentation
@@ -27,7 +27,7 @@ A modern, beautiful web UI for SaltStack/SaltProject built with Next.js 16 and F
 
 - Python 3.12+
 - Node.js 18+
-- SaltStack installation (optional - mock data available for development)
+- **SaltStack installation with Salt API enabled**
 
 ### Backend Setup
 

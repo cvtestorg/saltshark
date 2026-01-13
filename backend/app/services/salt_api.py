@@ -20,23 +20,18 @@ class SaltAPIClient:
 
     async def login(self) -> str:
         """Authenticate with Salt API and get token"""
-        try:
-            response = await self.client.post(
-                f"{self.base_url}/login",
-                json={
-                    "username": self.username,
-                    "password": self.password,
-                    "eauth": "pam",
-                },
-            )
-            response.raise_for_status()
-            data = response.json()
-            self.token = data["return"][0]["token"]
-            return self.token
-        except Exception as e:
-            # For development, return a mock token if Salt API is not available
-            self.token = "mock-token-for-development"
-            return self.token
+        response = await self.client.post(
+            f"{self.base_url}/login",
+            json={
+                "username": self.username,
+                "password": self.password,
+                "eauth": "pam",
+            },
+        )
+        response.raise_for_status()
+        data = response.json()
+        self.token = data["return"][0]["token"]
+        return self.token
 
     async def _request(
         self, method: str, endpoint: str, **kwargs
@@ -48,65 +43,11 @@ class SaltAPIClient:
         headers = kwargs.pop("headers", {})
         headers["X-Auth-Token"] = self.token
 
-        try:
-            response = await self.client.request(
-                method, f"{self.base_url}{endpoint}", headers=headers, **kwargs
-            )
-            response.raise_for_status()
-            return response.json()
-        except httpx.HTTPError:
-            # Return mock data for development
-            return self._mock_response(endpoint)
-
-    def _mock_response(self, endpoint: str) -> dict[str, Any]:
-        """Generate mock response for development"""
-        if "minions" in endpoint:
-            return {
-                "return": [
-                    {
-                        "minion-1": {
-                            "id": "minion-1",
-                            "os": "Ubuntu",
-                            "osrelease": "22.04",
-                            "status": "up",
-                        },
-                        "minion-2": {
-                            "id": "minion-2",
-                            "os": "CentOS",
-                            "osrelease": "8",
-                            "status": "up",
-                        },
-                        "minion-3": {
-                            "id": "minion-3",
-                            "os": "Debian",
-                            "osrelease": "11",
-                            "status": "down",
-                        },
-                    }
-                ]
-            }
-        elif "jobs" in endpoint:
-            return {
-                "return": [
-                    {
-                        "20240113001": {
-                            "jid": "20240113001",
-                            "function": "test.ping",
-                            "minions": ["minion-1", "minion-2"],
-                            "start_time": "2024-01-13T08:00:00",
-                            "status": "completed",
-                        },
-                        "20240113002": {
-                            "jid": "20240113002",
-                            "function": "state.apply",
-                            "minions": ["minion-1"],
-                            "start_time": "2024-01-13T08:15:00",
-                            "status": "running",
-                        },
-                    }
-                ]
-            }
-        return {"return": [{}]}
+        response = await self.client.request(
+            method, f"{self.base_url}{endpoint}", headers=headers, **kwargs
+        )
+        response.raise_for_status()
+        return response.json()
 
     async def list_minions(self) -> dict[str, Any]:
         """List all minions"""
