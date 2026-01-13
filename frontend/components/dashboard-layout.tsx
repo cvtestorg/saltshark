@@ -17,6 +17,11 @@ import {
   FolderTree,
   Workflow,
   Zap,
+  FileText,
+  ScrollText,
+  Shield,
+  Bell,
+  LogIn,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -32,6 +37,10 @@ const navigation = [
   { name: "Runners", href: "/runners", icon: Terminal },
   { name: "File Server", href: "/fileserver", icon: FolderTree },
   { name: "Orchestration", href: "/orchestration", icon: Workflow },
+  { name: "Templates", href: "/templates", icon: FileText },
+  { name: "Audit Logs", href: "/audit", icon: ScrollText },
+  { name: "Compliance", href: "/compliance", icon: Shield },
+  { name: "Notifications", href: "/notifications", icon: Bell },
   { name: "Advanced", href: "/advanced", icon: Zap },
   { name: "Grains", href: "/grains", icon: Database },
   { name: "Settings", href: "/settings", icon: Settings },

@@ -20,6 +20,11 @@ from app.api.v1 import (
     ssh,
     events,
     mine,
+    auth,
+    templates,
+    audit,
+    compliance,
+    notifications,
 )
 from app.core.config import settings
 
@@ -49,6 +54,7 @@ app.add_middleware(
 )
 
 # Include routers
+app.include_router(auth.router, prefix="/api/v1/auth", tags=["authentication"])
 app.include_router(minions.router, prefix="/api/v1", tags=["minions"])
 app.include_router(jobs.router, prefix="/api/v1", tags=["jobs"])
 app.include_router(grains.router, prefix="/api/v1", tags=["grains"])
@@ -64,6 +70,10 @@ app.include_router(cloud.router, prefix="/api/v1", tags=["cloud"])
 app.include_router(ssh.router, prefix="/api/v1", tags=["ssh"])
 app.include_router(events.router, prefix="/api/v1", tags=["events"])
 app.include_router(mine.router, prefix="/api/v1", tags=["mine"])
+app.include_router(templates.router, prefix="/api/v1/templates", tags=["templates"])
+app.include_router(audit.router, prefix="/api/v1/audit", tags=["audit"])
+app.include_router(compliance.router, prefix="/api/v1/compliance", tags=["compliance"])
+app.include_router(notifications.router, prefix="/api/v1/notifications", tags=["notifications"])
 
 
 @app.get("/")
