@@ -1,4 +1,6 @@
 """Salt Runners API endpoints"""
+from typing import Any
+
 from fastapi import APIRouter, HTTPException
 
 from app.schemas.runners import RunnerRequest
@@ -8,7 +10,7 @@ router = APIRouter()
 
 
 @router.post("/runners/execute")
-async def execute_runner(request: RunnerRequest):
+async def execute_runner(request: RunnerRequest) -> dict[str, Any]:
     """Execute a Salt runner"""
     try:
         response = await salt_client.run_salt_runner(
@@ -25,7 +27,7 @@ async def execute_runner(request: RunnerRequest):
 
 
 @router.get("/runners/common")
-async def list_common_runners():
+async def list_common_runners() -> dict[str, Any]:
     """List commonly used runners"""
     common_runners = [
         {

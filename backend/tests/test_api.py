@@ -1,5 +1,6 @@
 """Tests for API endpoints"""
 from unittest.mock import AsyncMock, patch
+
 from fastapi.testclient import TestClient
 
 

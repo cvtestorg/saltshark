@@ -1,4 +1,6 @@
 """Salt SSH API endpoints"""
+from typing import Any
+
 from fastapi import APIRouter, HTTPException
 
 from app.schemas.ssh import SSHExecuteRequest
@@ -8,7 +10,7 @@ router = APIRouter()
 
 
 @router.post("/ssh/execute")
-async def execute_ssh(request: SSHExecuteRequest):
+async def execute_ssh(request: SSHExecuteRequest) -> dict[str, Any]:
     """Execute command via Salt SSH"""
     try:
         response = await salt_client.ssh_execute(

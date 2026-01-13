@@ -1,11 +1,11 @@
 """Audit logging API endpoints."""
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Any
 
 from fastapi import APIRouter, Depends, Query
 
-from app.api.v1.auth import get_current_active_user, require_role
-from app.schemas.audit import AuditLog, AuditLogCreate
+from app.api.v1.auth import require_role
+from app.schemas.audit import AuditLog
 from app.schemas.auth import User
 
 router = APIRouter()
@@ -14,7 +14,7 @@ router = APIRouter()
 audit_logs_db: list[AuditLog] = [
     AuditLog(
         id="1",
-        timestamp=datetime.now(),
+        timestamp=datetime.now(tz=UTC),
         user="admin",
         action="job.execute",
         resource_type="job",

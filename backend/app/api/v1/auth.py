@@ -1,5 +1,5 @@
 """Authentication and authorization API endpoints."""
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -29,19 +29,21 @@ fake_users_db: dict[str, UserInDB] = {
         hashed_password=pwd_context.hash("admin123"),
         role="admin",
         is_active=True,
-        created_at=datetime.now(),
+        created_at=datetime.now(tz=UTC),
     )
 }
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Verify password against hash."""
-    return pwd_context.verify(plain_password, hashed_password)
+    result = pwd_context.verify(plain_password, hashed_password)
+    return bool(result)
 
 
 def get_password_hash(password: str) -> str:
     """Hash password."""
-    return pwd_context.hash(password)
+    result = pwd_context.hash(password)
+    return str(result)
 
 
 def get_user(username: str) -> UserInDB | None:
@@ -61,12 +63,12 @@ def create_access_token(data: dict[str, Any], expires_delta: timedelta | None = 
     """Create JWT access token."""
     to_encode = data.copy()
     if expires_delta:
-        expire = datetime.utcnow() + expires_delta
+        expire = datetime.now(tz=UTC) + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(minutes=15)
+        expire = datetime.now(tz=UTC) + timedelta(minutes=15)
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    return encoded_jwt
+    return str(encoded_jwt)
 
 
 async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
@@ -78,8 +80,8 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
     )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
-        if username is None:
+        username = payload.get("sub")
+        if username is None or not isinstance(username, str):
             raise credentials_exception
     except JWTError:
         raise credentials_exception
@@ -97,7 +99,7 @@ async def get_current_active_user(current_user: User = Depends(get_current_user)
     return current_user
 
 
-def require_role(*roles: str):
+def require_role(*roles: str):  # type: ignore[no-untyped-def]
     """Dependency to check user has required role."""
     async def role_checker(current_user: User = Depends(get_current_active_user)) -> User:
         if current_user.role not in roles:
@@ -176,7 +178,7 @@ async def create_user(
         hashed_password=hashed_password,
         role=user_create.role,
         is_active=True,
-        created_at=datetime.now(),
+        created_at=datetime.now(tz=UTC),
     )
     fake_users_db[user_create.username] = user_db
     return User.model_validate(user_db)
@@ -198,7 +200,7 @@ async def update_user(
             username_key = key
             break
     
-    if not user:
+    if not user or not username_key:
         raise HTTPException(status_code=404, detail="User not found")
     
     # Update fields

@@ -1,4 +1,6 @@
 """Pillar management schemas"""
+from typing import Any
+
 from pydantic import BaseModel, Field
 
 
@@ -14,4 +16,4 @@ class PillarItem(BaseModel):
 
     minion_id: str = Field(..., description="Minion ID")
     key: str = Field(..., description="Pillar key")
-    value: dict | str | list | None = Field(None, description="Pillar value")
+    value: dict[str, Any] | str | list[Any] | None = Field(None, description="Pillar value")

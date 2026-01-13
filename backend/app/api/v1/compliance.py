@@ -1,16 +1,21 @@
 """Compliance monitoring API endpoints."""
-from typing import Any
+from typing import Any, cast
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 
 from app.api.v1.auth import get_current_active_user
 from app.schemas.auth import User
-from app.schemas.compliance import ComplianceStatus, MinionCompliance, FailedState, DriftDetection
+from app.schemas.compliance import (
+    ComplianceStatus,
+    DriftDetection,
+    FailedState,
+    MinionCompliance,
+)
 
 router = APIRouter()
 
 # Mock compliance data (replace with real data from Salt)
-mock_compliance_data = {
+mock_compliance_data: dict[str, Any] = {
     "overall": ComplianceStatus(
         total_minions=3,
         compliant_minions=2,
@@ -56,7 +61,7 @@ async def get_compliance_status(
     current_user: User = Depends(get_current_active_user),
 ) -> ComplianceStatus:
     """Get overall compliance status."""
-    return mock_compliance_data["overall"]
+    return cast(ComplianceStatus, mock_compliance_data["overall"])
 
 
 @router.get("/minions/{minion_id}", response_model=MinionCompliance)
@@ -65,9 +70,9 @@ async def get_minion_compliance(
     current_user: User = Depends(get_current_active_user),
 ) -> MinionCompliance:
     """Get compliance status for a specific minion."""
-    compliance = mock_compliance_data["minions"].get(minion_id)
+    minions_data = cast(dict[str, MinionCompliance], mock_compliance_data.get("minions", {}))
+    compliance = minions_data.get(minion_id)
     if not compliance:
-        from fastapi import HTTPException
         raise HTTPException(status_code=404, detail="Minion not found")
     return compliance
 
@@ -77,8 +82,9 @@ async def get_failed_states(
     current_user: User = Depends(get_current_active_user),
 ) -> list[dict[str, Any]]:
     """Get all failed states across all minions."""
-    failed_states = []
-    for minion_id, compliance in mock_compliance_data["minions"].items():
+    failed_states: list[dict[str, Any]] = []
+    minions_data = cast(dict[str, MinionCompliance], mock_compliance_data.get("minions", {}))
+    for minion_id, compliance in minions_data.items():
         for failed_state in compliance.failed_states:
             failed_states.append({
                 "minion_id": minion_id,

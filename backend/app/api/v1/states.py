@@ -1,14 +1,16 @@
 """State management API endpoints"""
+from typing import Any
+
 from fastapi import APIRouter, HTTPException
 
-from app.schemas.state import StateApplyRequest, HighstateRequest
+from app.schemas.state import HighstateRequest, StateApplyRequest
 from app.services.salt_api import salt_client
 
 router = APIRouter()
 
 
 @router.get("/states")
-async def list_states():
+async def list_states() -> dict[str, Any]:
     """List available states"""
     try:
         response = await salt_client.list_states()
@@ -21,7 +23,7 @@ async def list_states():
 
 
 @router.post("/states/apply")
-async def apply_state(request: StateApplyRequest):
+async def apply_state(request: StateApplyRequest) -> dict[str, Any]:
     """Apply a state to target minions"""
     try:
         response = await salt_client.apply_state(
@@ -39,7 +41,7 @@ async def apply_state(request: StateApplyRequest):
 
 
 @router.post("/states/highstate")
-async def apply_highstate(request: HighstateRequest):
+async def apply_highstate(request: HighstateRequest) -> dict[str, Any]:
     """Apply highstate to target minions"""
     try:
         response = await salt_client.highstate(
@@ -56,7 +58,7 @@ async def apply_highstate(request: HighstateRequest):
 
 
 @router.get("/states/status/{target}")
-async def get_state_status(target: str):
+async def get_state_status(target: str) -> dict[str, Any]:
     """Get current state status for minions"""
     try:
         response = await salt_client.get_state_status(target)

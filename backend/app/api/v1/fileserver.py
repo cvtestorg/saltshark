@@ -1,4 +1,6 @@
 """File Server API endpoints"""
+from typing import Any
+
 from fastapi import APIRouter, HTTPException
 
 from app.services.salt_api import salt_client
@@ -7,7 +9,7 @@ router = APIRouter()
 
 
 @router.get("/fileserver/files")
-async def list_files(environment: str = "base"):
+async def list_files(environment: str = "base") -> dict[str, Any]:
     """List files in file server"""
     try:
         response = await salt_client.list_files(environment)
@@ -21,7 +23,7 @@ async def list_files(environment: str = "base"):
 
 
 @router.get("/fileserver/roots")
-async def list_file_roots():
+async def list_file_roots() -> dict[str, Any]:
     """List file server roots"""
     try:
         response = await salt_client.list_file_roots()
@@ -34,7 +36,7 @@ async def list_file_roots():
 
 
 @router.get("/fileserver/file")
-async def get_file_content(path: str):
+async def get_file_content(path: str) -> dict[str, Any]:
     """Get content of a file from file server"""
     try:
         response = await salt_client.get_file_content(path)

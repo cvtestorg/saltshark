@@ -1,4 +1,6 @@
 """State management schemas"""
+from typing import Any
+
 from pydantic import BaseModel, Field
 
 
@@ -23,5 +25,5 @@ class StateResult(BaseModel):
     minion_id: str = Field(..., description="Minion ID")
     state: str = Field(..., description="State name")
     result: bool = Field(..., description="Execution result")
-    changes: dict = Field(default_factory=dict, description="Changes made")
+    changes: dict[str, Any] = Field(default_factory=dict, description="Changes made")
     comment: str | None = Field(None, description="Result comment")

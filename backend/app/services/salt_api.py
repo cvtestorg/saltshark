@@ -2,8 +2,9 @@
 
 This module provides a client for interacting with the SaltStack API.
 """
-import httpx
 from typing import Any
+
+import httpx
 
 from app.core.config import settings
 
@@ -11,7 +12,7 @@ from app.core.config import settings
 class SaltAPIClient:
     """Client for SaltStack API communication"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.base_url = settings.SALT_API_URL
         self.username = settings.SALT_API_USER
         self.password = settings.SALT_API_PASSWORD
@@ -34,20 +35,21 @@ class SaltAPIClient:
         return self.token
 
     async def _request(
-        self, method: str, endpoint: str, **kwargs
+        self, method: str, endpoint: str, **kwargs: Any
     ) -> dict[str, Any]:
         """Make authenticated request to Salt API"""
         if not self.token:
             await self.login()
 
-        headers = kwargs.pop("headers", {})
+        headers: dict[str, Any] = kwargs.pop("headers", {})
         headers["X-Auth-Token"] = self.token
 
         response = await self.client.request(
             method, f"{self.base_url}{endpoint}", headers=headers, **kwargs
         )
         response.raise_for_status()
-        return response.json()
+        result: dict[str, Any] = response.json()
+        return result
 
     async def list_minions(self) -> dict[str, Any]:
         """List all minions"""
@@ -61,13 +63,33 @@ class SaltAPIClient:
         self, target: str, function: str, args: list[str] | None = None
     ) -> dict[str, Any]:
         """Execute a command on minions"""
-        payload = {
+        payload: dict[str, Any] = {
             "client": "local",
             "tgt": target,
             "fun": function,
         }
         if args:
             payload["arg"] = args
+
+        return await self._request("POST", "/", json=payload)
+
+    async def execute_job(
+        self,
+        target: str,
+        function: str,
+        args: list[str] | None = None,
+        kwargs: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Execute a job on minions with optional keyword arguments"""
+        payload: dict[str, Any] = {
+            "client": "local",
+            "tgt": target,
+            "fun": function,
+        }
+        if args:
+            payload["arg"] = args
+        if kwargs:
+            payload["kwarg"] = kwargs
 
         return await self._request("POST", "/", json=payload)
 
@@ -127,7 +149,7 @@ class SaltAPIClient:
         self, target: str, name: str, function: str, schedule: dict[str, Any]
     ) -> dict[str, Any]:
         """Add a scheduled job"""
-        payload = {
+        payload: dict[str, Any] = {
             "client": "local",
             "tgt": target,
             "fun": "schedule.add",
@@ -141,7 +163,7 @@ class SaltAPIClient:
 
     async def list_keys(self, status: str = "all") -> dict[str, Any]:
         """List minion keys by status (accepted, denied, pending, rejected, all)"""
-        payload = {
+        payload: dict[str, Any] = {
             "client": "wheel",
             "fun": "key.list_all",
         }
@@ -149,7 +171,7 @@ class SaltAPIClient:
 
     async def accept_key(self, minion_id: str) -> dict[str, Any]:
         """Accept a pending minion key"""
-        payload = {
+        payload: dict[str, Any] = {
             "client": "wheel",
             "fun": "key.accept",
             "match": minion_id,
@@ -158,7 +180,7 @@ class SaltAPIClient:
 
     async def delete_key(self, minion_id: str) -> dict[str, Any]:
         """Delete a minion key"""
-        payload = {
+        payload: dict[str, Any] = {
             "client": "wheel",
             "fun": "key.delete",
             "match": minion_id,
@@ -167,7 +189,7 @@ class SaltAPIClient:
 
     async def reject_key(self, minion_id: str) -> dict[str, Any]:
         """Reject a pending minion key"""
-        payload = {
+        payload: dict[str, Any] = {
             "client": "wheel",
             "fun": "key.reject",
             "match": minion_id,
@@ -176,7 +198,7 @@ class SaltAPIClient:
 
     async def run_salt_runner(self, runner: str, args: list[str] | None = None) -> dict[str, Any]:
         """Execute a Salt runner"""
-        payload = {
+        payload: dict[str, Any] = {
             "client": "runner",
             "fun": runner,
         }
@@ -200,7 +222,7 @@ class SaltAPIClient:
         self, orchestration: str, target: str = "*"
     ) -> dict[str, Any]:
         """Run a Salt orchestration"""
-        payload = {
+        payload: dict[str, Any] = {
             "client": "runner",
             "fun": "state.orchestrate",
             "arg": [orchestration],
@@ -217,7 +239,7 @@ class SaltAPIClient:
     ) -> dict[str, Any]:
         """Add a beacon"""
         return await self.execute_command(
-            target, "beacons.add", [name, beacon_data]
+            target, "beacons.add", [name, str(beacon_data)]
         )
 
     async def delete_beacon(self, target: str, name: str) -> dict[str, Any]:
@@ -246,7 +268,7 @@ class SaltAPIClient:
 
     async def list_cloud_profiles(self, provider: str | None = None) -> dict[str, Any]:
         """List cloud profiles"""
-        payload = {
+        payload: dict[str, Any] = {
             "client": "runner",
             "fun": "cloud.list_profiles",
         }
@@ -258,7 +280,7 @@ class SaltAPIClient:
         self, profile: str, names: list[str]
     ) -> dict[str, Any]:
         """Create cloud instances"""
-        payload = {
+        payload: dict[str, Any] = {
             "client": "runner",
             "fun": "cloud.profile",
             "arg": [profile],
@@ -270,7 +292,7 @@ class SaltAPIClient:
         self, target: str, function: str, roster: str = "flat"
     ) -> dict[str, Any]:
         """Execute command via Salt SSH"""
-        payload = {
+        payload: dict[str, Any] = {
             "client": "ssh",
             "tgt": target,
             "fun": function,
@@ -282,7 +304,7 @@ class SaltAPIClient:
         """Subscribe to Salt event stream"""
         # Note: This would typically use SSE or WebSocket
         # For now, return recent events
-        payload = {
+        payload: dict[str, Any] = {
             "client": "runner",
             "fun": "event.get_event",
             "kwarg": {"tag": tag, "wait": 5},
@@ -293,7 +315,7 @@ class SaltAPIClient:
         """List configured nodegroups"""
         # Nodegroups are typically defined in master config
         # We can get them via runner
-        payload = {
+        payload: dict[str, Any] = {
             "client": "runner",
             "fun": "config.get",
             "arg": ["nodegroups"],
@@ -302,14 +324,14 @@ class SaltAPIClient:
 
     async def list_reactor_systems(self) -> dict[str, Any]:
         """List configured reactor systems"""
-        payload = {
+        payload: dict[str, Any] = {
             "client": "runner",
             "fun": "config.get",
             "arg": ["reactor"],
         }
         return await self._request("POST", "/", json=payload)
 
-    async def close(self):
+    async def close(self) -> None:
         """Close the HTTP client"""
         await self.client.aclose()
 

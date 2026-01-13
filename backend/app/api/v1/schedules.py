@@ -1,4 +1,6 @@
 """Schedule management API endpoints"""
+from typing import Any
+
 from fastapi import APIRouter, HTTPException
 
 from app.schemas.schedule import ScheduleRequest
@@ -8,7 +10,7 @@ router = APIRouter()
 
 
 @router.get("/schedules/{target}")
-async def list_schedules(target: str = "*"):
+async def list_schedules(target: str = "*") -> dict[str, Any]:
     """List scheduled jobs"""
     try:
         response = await salt_client.list_schedules(target)
@@ -21,7 +23,7 @@ async def list_schedules(target: str = "*"):
 
 
 @router.post("/schedules")
-async def add_schedule(request: ScheduleRequest):
+async def add_schedule(request: ScheduleRequest) -> dict[str, Any]:
     """Add a scheduled job"""
     try:
         response = await salt_client.add_schedule(
@@ -40,7 +42,7 @@ async def add_schedule(request: ScheduleRequest):
 
 
 @router.delete("/schedules/{target}/{name}")
-async def delete_schedule(target: str, name: str):
+async def delete_schedule(target: str, name: str) -> dict[str, Any]:
     """Delete a scheduled job"""
     try:
         response = await salt_client.delete_schedule(target, name)

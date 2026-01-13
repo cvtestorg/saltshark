@@ -1,6 +1,8 @@
 """Tests for the Salt API client"""
+from unittest.mock import AsyncMock, MagicMock
+
 import pytest
-from unittest.mock import AsyncMock, patch, MagicMock
+
 from app.services.salt_api import SaltAPIClient
 
 

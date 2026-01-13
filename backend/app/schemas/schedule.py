@@ -1,4 +1,6 @@
 """Schedule management schemas"""
+from typing import Any
+
 from pydantic import BaseModel, Field
 
 
@@ -7,7 +9,7 @@ class ScheduleItem(BaseModel):
 
     name: str = Field(..., description="Schedule name")
     function: str = Field(..., description="Function to execute")
-    schedule: dict = Field(..., description="Schedule configuration")
+    schedule: dict[str, Any] = Field(..., description="Schedule configuration")
     enabled: bool = Field(True, description="Whether schedule is enabled")
 
 
@@ -17,7 +19,7 @@ class ScheduleRequest(BaseModel):
     target: str = Field(..., description="Target minions")
     name: str = Field(..., description="Schedule name")
     function: str = Field(..., description="Function to execute")
-    schedule: dict = Field(..., description="Schedule configuration (cron, interval, etc)")
+    schedule: dict[str, Any] = Field(..., description="Schedule configuration (cron, interval, etc)")
 
 
 class ScheduleList(BaseModel):

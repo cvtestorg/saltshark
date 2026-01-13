@@ -1,7 +1,9 @@
 """Jobs API endpoints"""
+from typing import Any
+
 from fastapi import APIRouter, HTTPException
 
-from app.schemas.job import JobList, JobStatus, JobResult, JobExecuteRequest
+from app.schemas.job import JobExecuteRequest, JobList, JobResult, JobStatus
 from app.services.salt_api import salt_client
 
 router = APIRouter()
@@ -55,8 +57,8 @@ async def get_job(jid: str) -> JobResult:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/jobs/execute", response_model=dict)
-async def execute_job(job_request: JobExecuteRequest) -> dict:
+@router.post("/jobs/execute")
+async def execute_job(job_request: JobExecuteRequest) -> dict[str, Any]:
     """Execute a Salt job on target minions"""
     try:
         response = await salt_client.execute_command(

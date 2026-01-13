@@ -1,4 +1,6 @@
 """Orchestration API endpoints"""
+from typing import Any
+
 from fastapi import APIRouter, HTTPException
 
 from app.schemas.orchestration import OrchestrationRequest
@@ -8,7 +10,7 @@ router = APIRouter()
 
 
 @router.post("/orchestration/run")
-async def run_orchestration(request: OrchestrationRequest):
+async def run_orchestration(request: OrchestrationRequest) -> dict[str, Any]:
     """Run a Salt orchestration"""
     try:
         response = await salt_client.orchestrate(
@@ -25,7 +27,7 @@ async def run_orchestration(request: OrchestrationRequest):
 
 
 @router.get("/orchestration/common")
-async def list_common_orchestrations():
+async def list_common_orchestrations() -> dict[str, Any]:
     """List commonly used orchestrations"""
     common_orch = [
         {

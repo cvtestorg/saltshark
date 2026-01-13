@@ -1,4 +1,6 @@
 """Minion schemas"""
+from typing import Any
+
 from pydantic import BaseModel, Field
 
 
@@ -19,8 +21,8 @@ class MinionStatus(MinionBase):
 class MinionDetail(MinionStatus):
     """Detailed minion information"""
 
-    grains: dict | None = Field(None, description="Minion grains data")
-    pillars: dict | None = Field(None, description="Minion pillars data")
+    grains: dict[str, Any] | None = Field(None, description="Minion grains data")
+    pillars: dict[str, Any] | None = Field(None, description="Minion pillars data")
 
 
 class MinionList(BaseModel):
