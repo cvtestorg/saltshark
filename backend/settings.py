@@ -35,7 +35,7 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = Field(default=30)
     
     # Database
-    database_url: str = Field(default="sqlite://./saltshark.db")
+    database_url: str = Field(default="postgresql://saltshark:password@localhost:5432/saltshark_dev")
     
     # Middleware
     enable_gzip: bool = Field(default=True)

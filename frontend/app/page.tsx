@@ -156,10 +156,6 @@ export default function Home() {
                   <span className="text-sm">Database</span>
                   <CheckCircle className="h-4 w-4 text-green-500" />
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm">Redis Cache</span>
-                  <CheckCircle className="h-4 w-4 text-green-500" />
-                </div>
               </div>
             </CardContent>
           </Card>
