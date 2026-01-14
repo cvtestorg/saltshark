@@ -5,7 +5,7 @@ description = "SaltShark Backend API - Web UI for SaltStack/SaltProject"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "faster-app>=0.1.5",
+    "faster-app>=0.1.6",
     "httpx>=0.28.0",
     "python-jose[cryptography]>=3.3.0",
     "passlib[bcrypt]>=1.7.4",
