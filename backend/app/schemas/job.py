@@ -1,6 +1,8 @@
 """Job schemas"""
+
+from typing import Any
+
 from pydantic import BaseModel, Field
-from datetime import datetime
 
 
 class JobBase(BaseModel):
@@ -21,7 +23,7 @@ class JobStatus(JobBase):
 class JobResult(JobStatus):
     """Job result with detailed information"""
 
-    result: dict | None = Field(None, description="Job execution results")
+    result: dict[str, Any] | None = Field(None, description="Job execution results")
     end_time: str | None = Field(None, description="Job end time")
 
 

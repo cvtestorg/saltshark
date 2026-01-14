@@ -1,4 +1,5 @@
 """Audit log schemas."""
+
 from datetime import datetime
 from typing import Any
 
@@ -7,6 +8,7 @@ from pydantic import BaseModel
 
 class AuditLog(BaseModel):
     """Audit log entry."""
+
     id: str
     timestamp: datetime
     user: str
@@ -20,6 +22,7 @@ class AuditLog(BaseModel):
 
 class AuditLogCreate(BaseModel):
     """Audit log creation request."""
+
     user: str
     action: str
     resource_type: str

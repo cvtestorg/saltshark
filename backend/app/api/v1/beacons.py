@@ -1,4 +1,7 @@
 """Beacons API endpoints"""
+
+from typing import Any
+
 from fastapi import APIRouter, HTTPException
 
 from app.schemas.beacons import BeaconConfig
@@ -8,7 +11,7 @@ router = APIRouter()
 
 
 @router.get("/beacons/{target}")
-async def list_beacons(target: str = "*"):
+async def list_beacons(target: str = "*") -> dict[str, Any]:
     """List configured beacons"""
     try:
         response = await salt_client.list_beacons(target)
@@ -21,7 +24,7 @@ async def list_beacons(target: str = "*"):
 
 
 @router.post("/beacons")
-async def add_beacon(config: BeaconConfig):
+async def add_beacon(config: BeaconConfig) -> dict[str, Any]:
     """Add a beacon"""
     try:
         response = await salt_client.add_beacon(
@@ -39,7 +42,7 @@ async def add_beacon(config: BeaconConfig):
 
 
 @router.delete("/beacons/{target}/{name}")
-async def delete_beacon(target: str, name: str):
+async def delete_beacon(target: str, name: str) -> dict[str, Any]:
     """Delete a beacon"""
     try:
         response = await salt_client.delete_beacon(target, name)

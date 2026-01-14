@@ -1,4 +1,7 @@
 """Event stream and targeting API endpoints"""
+
+from typing import Any
+
 from fastapi import APIRouter, HTTPException
 
 from app.services.salt_api import salt_client
@@ -7,7 +10,7 @@ router = APIRouter()
 
 
 @router.get("/events")
-async def get_events(tag: str = ""):
+async def get_events(tag: str = "") -> dict[str, Any]:
     """Get events from event stream"""
     try:
         response = await salt_client.get_events(tag)
@@ -20,7 +23,7 @@ async def get_events(tag: str = ""):
 
 
 @router.get("/nodegroups")
-async def list_nodegroups():
+async def list_nodegroups() -> dict[str, Any]:
     """List configured nodegroups"""
     try:
         response = await salt_client.list_nodegroups()
@@ -33,7 +36,7 @@ async def list_nodegroups():
 
 
 @router.get("/reactor")
-async def list_reactors():
+async def list_reactors() -> dict[str, Any]:
     """List configured reactor systems"""
     try:
         response = await salt_client.list_reactor_systems()

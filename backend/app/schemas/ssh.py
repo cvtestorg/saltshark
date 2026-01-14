@@ -1,4 +1,7 @@
 """Salt SSH schemas"""
+
+from typing import Any
+
 from pydantic import BaseModel, Field
 
 
@@ -15,4 +18,4 @@ class SSHResult(BaseModel):
 
     target: str = Field(..., description="Target host")
     success: bool = Field(..., description="Execution success")
-    result: dict | str = Field(..., description="Execution result")
+    result: dict[str, Any] | str = Field(..., description="Execution result")

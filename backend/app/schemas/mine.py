@@ -1,4 +1,5 @@
 """Salt Mine schemas"""
+
 from pydantic import BaseModel, Field
 
 

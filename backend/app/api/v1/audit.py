@@ -1,11 +1,12 @@
 """Audit logging API endpoints."""
-from datetime import datetime
+
+from datetime import UTC, datetime
 from typing import Any
 
 from fastapi import APIRouter, Depends, Query
 
-from app.api.v1.auth import get_current_active_user, require_role
-from app.schemas.audit import AuditLog, AuditLogCreate
+from app.api.v1.auth import require_role
+from app.schemas.audit import AuditLog
 from app.schemas.auth import User
 
 router = APIRouter()
@@ -14,7 +15,7 @@ router = APIRouter()
 audit_logs_db: list[AuditLog] = [
     AuditLog(
         id="1",
-        timestamp=datetime.now(),
+        timestamp=datetime.now(tz=UTC),
         user="admin",
         action="job.execute",
         resource_type="job",
@@ -37,22 +38,22 @@ async def list_audit_logs(
 ) -> list[AuditLog]:
     """List audit logs with filtering."""
     logs = audit_logs_db.copy()
-    
+
     # Filter by user
     if user:
         logs = [log for log in logs if log.user == user]
-    
+
     # Filter by action
     if action:
         logs = [log for log in logs if log.action == action]
-    
+
     # Filter by resource type
     if resource_type:
         logs = [log for log in logs if log.resource_type == resource_type]
-    
+
     # Sort by timestamp (newest first)
     logs.sort(key=lambda x: x.timestamp, reverse=True)
-    
+
     # Pagination
     return logs[skip : skip + limit]
 
@@ -102,7 +103,7 @@ async def create_audit_log(
 ) -> AuditLog:
     """Create a new audit log entry (internal function)."""
     log_id = str(len(audit_logs_db) + 1)
-    
+
     audit_log = AuditLog(
         id=log_id,
         timestamp=datetime.now(),
@@ -114,7 +115,7 @@ async def create_audit_log(
         result=result,
         ip_address=ip_address,
     )
-    
+
     audit_logs_db.append(audit_log)
     return audit_log
 

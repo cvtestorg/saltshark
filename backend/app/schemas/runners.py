@@ -1,4 +1,7 @@
 """Salt Runners schemas"""
+
+from typing import Any
+
 from pydantic import BaseModel, Field
 
 
@@ -14,4 +17,6 @@ class RunnerResult(BaseModel):
 
     runner: str = Field(..., description="Runner function name")
     success: bool = Field(..., description="Execution success status")
-    result: dict | list | str = Field(..., description="Runner result data")
+    result: dict[str, Any] | list[Any] | str = Field(
+        ..., description="Runner result data"
+    )

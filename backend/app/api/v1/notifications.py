@@ -1,4 +1,5 @@
 """Notifications and alerts API endpoints."""
+
 from datetime import datetime
 from typing import Any
 
@@ -56,16 +57,15 @@ async def list_notifications(
 ) -> list[Notification]:
     """List notifications for current user."""
     user_notifications = [
-        n for n in notifications_db
-        if n.user == current_user.username
+        n for n in notifications_db if n.user == current_user.username
     ]
-    
+
     if unread_only:
         user_notifications = [n for n in user_notifications if not n.is_read]
-    
+
     # Sort by created_at (newest first)
     user_notifications.sort(key=lambda x: x.created_at, reverse=True)
-    
+
     return user_notifications
 
 
@@ -77,11 +77,13 @@ async def mark_notifications_read(
     """Mark notifications as read."""
     count = 0
     for notification in notifications_db:
-        if (notification.id in notification_ids and 
-            notification.user == current_user.username):
+        if (
+            notification.id in notification_ids
+            and notification.user == current_user.username
+        ):
             notification.is_read = True
             count += 1
-    
+
     return {"message": f"Marked {count} notifications as read"}
 
 
@@ -95,7 +97,7 @@ async def mark_all_notifications_read(
         if notification.user == current_user.username and not notification.is_read:
             notification.is_read = True
             count += 1
-    
+
     return {"message": f"Marked {count} notifications as read"}
 
 
@@ -106,12 +108,15 @@ async def delete_notification(
 ) -> dict[str, str]:
     """Delete a notification."""
     for i, notification in enumerate(notifications_db):
-        if (notification.id == notification_id and 
-            notification.user == current_user.username):
+        if (
+            notification.id == notification_id
+            and notification.user == current_user.username
+        ):
             notifications_db.pop(i)
             return {"message": "Notification deleted"}
-    
+
     from fastapi import HTTPException
+
     raise HTTPException(status_code=404, detail="Notification not found")
 
 
@@ -149,8 +154,7 @@ async def get_unread_count(
 ) -> dict[str, int]:
     """Get count of unread notifications."""
     count = sum(
-        1 for n in notifications_db
-        if n.user == current_user.username and not n.is_read
+        1 for n in notifications_db if n.user == current_user.username and not n.is_read
     )
     return {"count": count}
 
@@ -165,7 +169,7 @@ async def create_notification(
 ) -> Notification:
     """Create a new notification (internal function)."""
     notification_id = str(len(notifications_db) + 1)
-    
+
     notification = Notification(
         id=notification_id,
         user=user,
@@ -177,6 +181,6 @@ async def create_notification(
         created_at=datetime.now(),
         data=data or {},
     )
-    
+
     notifications_db.append(notification)
     return notification

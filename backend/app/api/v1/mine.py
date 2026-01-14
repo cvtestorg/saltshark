@@ -1,4 +1,7 @@
 """Salt Mine API endpoints"""
+
+from typing import Any
+
 from fastapi import APIRouter, HTTPException
 
 from app.schemas.mine import MineGetRequest, MineSendRequest
@@ -8,7 +11,7 @@ router = APIRouter()
 
 
 @router.post("/mine/get")
-async def get_mine_data(request: MineGetRequest):
+async def get_mine_data(request: MineGetRequest) -> dict[str, Any]:
     """Get data from Salt Mine"""
     try:
         response = await salt_client.get_mine_data(
@@ -24,7 +27,7 @@ async def get_mine_data(request: MineGetRequest):
 
 
 @router.post("/mine/send")
-async def send_mine_data(request: MineSendRequest):
+async def send_mine_data(request: MineSendRequest) -> dict[str, Any]:
     """Send data to Salt Mine"""
     try:
         response = await salt_client.send_mine_data(
@@ -41,7 +44,7 @@ async def send_mine_data(request: MineSendRequest):
 
 
 @router.get("/mine/returners")
-async def list_returners():
+async def list_returners() -> dict[str, Any]:
     """List available returners"""
     try:
         response = await salt_client.list_returners()

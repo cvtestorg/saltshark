@@ -1,11 +1,11 @@
 """Compliance monitoring schemas."""
-from datetime import datetime
 
 from pydantic import BaseModel
 
 
 class ComplianceStatus(BaseModel):
     """Overall compliance status."""
+
     total_minions: int
     compliant_minions: int
     non_compliant_minions: int
@@ -15,6 +15,7 @@ class ComplianceStatus(BaseModel):
 
 class FailedState(BaseModel):
     """Failed state information."""
+
     state_name: str
     state_id: str
     reason: str
@@ -23,6 +24,7 @@ class FailedState(BaseModel):
 
 class MinionCompliance(BaseModel):
     """Minion compliance status."""
+
     minion_id: str
     is_compliant: bool
     failed_states: list[FailedState] = []
@@ -32,6 +34,7 @@ class MinionCompliance(BaseModel):
 
 class DriftDetection(BaseModel):
     """Configuration drift detection."""
+
     minion_id: str
     resource_type: str  # package, file, service, etc.
     resource_name: str

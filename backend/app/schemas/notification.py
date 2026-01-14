@@ -1,4 +1,5 @@
 """Notification schemas."""
+
 from datetime import datetime
 from typing import Any
 
@@ -7,6 +8,7 @@ from pydantic import BaseModel, EmailStr
 
 class Notification(BaseModel):
     """Notification model."""
+
     id: str
     user: str
     type: str  # job_completed, job_failed, minion_down, compliance_failure, etc.
@@ -20,6 +22,7 @@ class Notification(BaseModel):
 
 class NotificationSettings(BaseModel):
     """Notification settings for a user."""
+
     user: str
     email_enabled: bool = False
     email_address: EmailStr | None = None

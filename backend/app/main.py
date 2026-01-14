@@ -1,36 +1,37 @@
 """Main FastAPI application for SaltShark"""
+
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.v1 import (
-    minions,
-    jobs,
-    grains,
-    states,
-    pillars,
-    schedules,
-    keys,
-    runners,
-    fileserver,
-    orchestration,
+    audit,
+    auth,
     beacons,
     cloud,
-    ssh,
-    events,
-    mine,
-    auth,
-    templates,
-    audit,
     compliance,
+    events,
+    fileserver,
+    grains,
+    jobs,
+    keys,
+    mine,
+    minions,
     notifications,
+    orchestration,
+    pillars,
+    runners,
+    schedules,
+    ssh,
+    states,
+    templates,
 )
 from app.core.config import settings
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(app: FastAPI):  # type: ignore[no-untyped-def]
     """Application lifespan handler"""
     # Startup
     yield
@@ -73,11 +74,13 @@ app.include_router(mine.router, prefix="/api/v1", tags=["mine"])
 app.include_router(templates.router, prefix="/api/v1/templates", tags=["templates"])
 app.include_router(audit.router, prefix="/api/v1/audit", tags=["audit"])
 app.include_router(compliance.router, prefix="/api/v1/compliance", tags=["compliance"])
-app.include_router(notifications.router, prefix="/api/v1/notifications", tags=["notifications"])
+app.include_router(
+    notifications.router, prefix="/api/v1/notifications", tags=["notifications"]
+)
 
 
 @app.get("/")
-async def root():
+async def root() -> dict[str, str]:
     """Root endpoint"""
     return {
         "message": "Welcome to SaltShark API",
@@ -87,6 +90,6 @@ async def root():
 
 
 @app.get("/health")
-async def health():
+async def health() -> dict[str, str]:
     """Health check endpoint"""
     return {"status": "healthy"}

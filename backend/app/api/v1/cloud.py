@@ -1,4 +1,7 @@
 """Cloud management API endpoints"""
+
+from typing import Any
+
 from fastapi import APIRouter, HTTPException
 
 from app.schemas.cloud import CloudInstanceRequest
@@ -8,7 +11,7 @@ router = APIRouter()
 
 
 @router.get("/cloud/providers")
-async def list_providers():
+async def list_providers() -> dict[str, Any]:
     """List cloud providers"""
     try:
         response = await salt_client.list_cloud_providers()
@@ -21,7 +24,7 @@ async def list_providers():
 
 
 @router.get("/cloud/profiles")
-async def list_profiles(provider: str | None = None):
+async def list_profiles(provider: str | None = None) -> dict[str, Any]:
     """List cloud profiles"""
     try:
         response = await salt_client.list_cloud_profiles(provider)
@@ -34,7 +37,7 @@ async def list_profiles(provider: str | None = None):
 
 
 @router.post("/cloud/instances")
-async def create_instance(request: CloudInstanceRequest):
+async def create_instance(request: CloudInstanceRequest) -> dict[str, Any]:
     """Create cloud instances"""
     try:
         response = await salt_client.create_cloud_instance(
