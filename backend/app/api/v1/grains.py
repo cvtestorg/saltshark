@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, HTTPException
 
-from app.schemas.grains import GrainsData, PillarsData
+from schemas.grains import GrainsData, PillarsData
 from app.services.salt_api import salt_client
 
 router = APIRouter()

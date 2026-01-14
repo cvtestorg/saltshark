@@ -193,7 +193,7 @@ The `SaltAPIClient` class provides **30+ methods** covering:
 4. **Notifications**: Built-in notification system
 5. **Better Documentation**: OpenAPI/Swagger documentation
 6. **Type Safety**: Full TypeScript-style type hints
-7. **Modern Framework**: Built on faster-app v0.1.6
+7. **Modern Framework**: Built on faster-app v0.1.7
 8. **Comprehensive Testing**: 71% test coverage with 74 tests
 
 ### What rest_cherrypy Has That SaltShark Doesn't:

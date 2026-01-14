@@ -4,7 +4,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.main import app
-from app.services.salt_api import salt_client
+from services.salt_api import salt_client
 
 
 @pytest.fixture(autouse=True)

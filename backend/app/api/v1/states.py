@@ -4,8 +4,8 @@ from typing import Any
 
 from fastapi import APIRouter, HTTPException
 
-from app.schemas.state import HighstateRequest, StateApplyRequest
-from app.services.salt_api import salt_client
+from schemas.state import HighstateRequest, StateApplyRequest
+from services.salt_api import salt_client
 
 router = APIRouter()
 

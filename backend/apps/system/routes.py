@@ -5,7 +5,7 @@ from typing import Any
 from fastapi import APIRouter, Depends
 
 from apps.auth.routes import get_current_active_user
-from app.schemas.auth import User
+from schemas.auth import User
 
 router = APIRouter()
 
@@ -30,7 +30,7 @@ async def get_stats(current_user: User = Depends(get_current_active_user)) -> di
             "server": {
                 "version": "0.1.0",
                 "uptime": "N/A",
-                "framework": "faster-app v0.1.6",
+                "framework": "faster-app v0.1.7",
             },
             "requests": {
                 "total": "N/A",
@@ -55,5 +55,5 @@ async def health_check() -> dict[str, Any]:
         "status": "healthy",
         "timestamp": datetime.now(tz=timezone.utc).isoformat(),
         "version": "0.1.0",
-        "framework": "faster-app v0.1.6",
+        "framework": "faster-app v0.1.7",
     }

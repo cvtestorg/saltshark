@@ -11,7 +11,7 @@ from app.api.v1.auth import (
     get_password_hash,
     verify_password,
 )
-from app.schemas.auth import UserInDB
+from schemas.auth import UserInDB
 
 
 @pytest.fixture(autouse=True)

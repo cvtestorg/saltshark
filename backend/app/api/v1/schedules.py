@@ -4,7 +4,7 @@ from typing import Any
 
 from fastapi import APIRouter, HTTPException
 
-from app.schemas.schedule import ScheduleRequest
+from schemas.schedule import ScheduleRequest
 from app.services.salt_api import salt_client
 
 router = APIRouter()

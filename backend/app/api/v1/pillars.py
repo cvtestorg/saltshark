@@ -4,7 +4,7 @@ from typing import Any
 
 from fastapi import APIRouter, HTTPException
 
-from app.services.salt_api import salt_client
+from services.salt_api import salt_client
 
 router = APIRouter()
 
