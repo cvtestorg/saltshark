@@ -1,0 +1,41 @@
+FROM ubuntu:24.04
+LABEL maintainer="tim@cyface.com"
+LABEL description="Salt Minion with latest Salt version"
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install dependencies
+RUN apt-get update -y && \
+    apt-get install -y \
+        python3 \
+        python3-pip \
+        python3-venv \
+        curl \
+        ca-certificates && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install Salt from PyPI (latest 3007.x series) with all dependencies
+# SECURITY NOTE: Using --trusted-host flags to bypass SSL verification
+# This is ONLY for development/testing in restricted network environments
+# For production, ensure proper CA certificates are installed and remove --trusted-host flags
+RUN python3 -m venv /opt/saltstack/salt && \
+    /opt/saltstack/salt/bin/pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org --upgrade pip setuptools && \
+    /opt/saltstack/salt/bin/pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org \
+        packaging distro PyYAML jinja2 msgpack requests tornado pycryptodome pyzmq markupsafe \
+        looseversion psutil jmespath cryptography && \
+    /opt/saltstack/salt/bin/pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org salt
+
+# Create symlinks for salt commands
+RUN for cmd in salt salt-minion salt-key salt-call; do \
+        ln -sf /opt/saltstack/salt/bin/$cmd /usr/local/bin/$cmd; \
+    done
+
+# Create configuration directories
+RUN mkdir -p /etc/salt /var/cache/salt /var/log/salt /var/run/salt
+
+# Configure minion to connect to salt-master
+RUN echo "master: salt-master" > /etc/salt/minion
+
+CMD ["salt-minion", "-l", "debug"]
+

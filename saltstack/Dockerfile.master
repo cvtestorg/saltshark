@@ -1,0 +1,47 @@
+FROM ubuntu:24.04
+LABEL maintainer="tim@cyface.com"
+LABEL description="Salt Master with latest Salt version"
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install dependencies
+RUN apt-get update -y && \
+    apt-get install -y \
+        python3 \
+        python3-pip \
+        python3-venv \
+        curl \
+        ca-certificates && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install Salt from PyPI (latest 3007.x series) with all dependencies
+# SECURITY NOTE: Using --trusted-host flags to bypass SSL verification
+# This is ONLY for development/testing in restricted network environments
+# For production, ensure proper CA certificates are installed and remove --trusted-host flags
+RUN python3 -m venv /opt/saltstack/salt && \
+    /opt/saltstack/salt/bin/pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org --upgrade pip setuptools && \
+    /opt/saltstack/salt/bin/pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org \
+        packaging distro PyYAML jinja2 msgpack requests tornado pycryptodome pyzmq markupsafe cherrypy \
+        looseversion psutil jmespath cryptography && \
+    /opt/saltstack/salt/bin/pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org salt
+
+# Create symlinks for salt commands
+RUN for cmd in salt salt-master salt-key salt-run salt-call salt-api; do \
+        ln -sf /opt/saltstack/salt/bin/$cmd /usr/local/bin/$cmd; \
+    done
+
+# Create configuration directories
+RUN mkdir -p /etc/salt /var/cache/salt /var/log/salt /var/run/salt
+
+# Copy master configuration
+COPY master.conf /etc/salt/master
+
+# Expose Salt ports: 4505 (publish), 4506 (return), 8000 (API)
+EXPOSE 4505 4506 8000
+
+# Copy and set entrypoint script
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]

@@ -1,116 +1,20 @@
-version: '3.8'
-
-services:
-  # Salt Master with rest_cherrypy API
+services: 
   salt-master:
-    image: saltstack/salt:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.master
     container_name: salt-master
-    hostname: salt-master
     ports:
-      - "4505:4505"
-      - "4506:4506"
-      - "8000:8000"
-    volumes:
-      - ./master:/etc/salt/master.d:ro
-      - ./api:/etc/salt/api.d:ro
-      - salt-pki:/etc/salt/pki
-      - salt-cache:/var/cache/salt
-      - salt-logs:/var/log/salt
+      - "4505:4505"  # Salt publish port
+      - "4506:4506"  # Salt return port
+      - "8000:8000"  # Salt API port
     environment:
-      - SALT_MASTER_HOST=salt-master
-      - SALT_LOG_LEVEL=info
-    command: salt-master -l info
-    networks:
-      - saltnet
+      - SALT_SHARED_SECRET=${SALT_SHARED_SECRET:-changeme_insecure_default}
 
-  # Salt API
-  salt-api:
-    image: saltstack/salt:latest
-    container_name: salt-api
-    hostname: salt-api
+  salt-minion:
+    build:
+      context: .
+      dockerfile: Dockerfile.minion
     depends_on:
       - salt-master
-    volumes:
-      - ./master:/etc/salt/master.d:ro
-      - ./api:/etc/salt/api.d:ro
-      - salt-pki:/etc/salt/pki:ro
-      - salt-cache:/var/cache/salt
-      - salt-logs:/var/log/salt
-    environment:
-      - SALT_MASTER_HOST=salt-master
-      - SALT_LOG_LEVEL=info
-    command: salt-api -l info
-    networks:
-      - saltnet
 
-  # Salt Minion 1
-  salt-minion-1:
-    image: saltstack/salt:latest
-    container_name: salt-minion-1
-    hostname: minion-1
-    depends_on:
-      - salt-master
-    volumes:
-      - ./minion:/etc/salt/minion.d:ro
-      - salt-minion-1-pki:/etc/salt/pki
-      - salt-minion-1-cache:/var/cache/salt
-    environment:
-      - SALT_MASTER_HOST=salt-master
-      - SALT_MINION_ID=minion-1
-      - SALT_LOG_LEVEL=info
-    command: salt-minion -l info
-    networks:
-      - saltnet
-
-  # Salt Minion 2
-  salt-minion-2:
-    image: saltstack/salt:latest
-    container_name: salt-minion-2
-    hostname: minion-2
-    depends_on:
-      - salt-master
-    volumes:
-      - ./minion:/etc/salt/minion.d:ro
-      - salt-minion-2-pki:/etc/salt/pki
-      - salt-minion-2-cache:/var/cache/salt
-    environment:
-      - SALT_MASTER_HOST=salt-master
-      - SALT_MINION_ID=minion-2
-      - SALT_LOG_LEVEL=info
-    command: salt-minion -l info
-    networks:
-      - saltnet
-
-  # Salt Minion 3
-  salt-minion-3:
-    image: saltstack/salt:latest
-    container_name: salt-minion-3
-    hostname: minion-3
-    depends_on:
-      - salt-master
-    volumes:
-      - ./minion:/etc/salt/minion.d:ro
-      - salt-minion-3-pki:/etc/salt/pki
-      - salt-minion-3-cache:/var/cache/salt
-    environment:
-      - SALT_MASTER_HOST=salt-master
-      - SALT_MINION_ID=minion-3
-      - SALT_LOG_LEVEL=info
-    command: salt-minion -l info
-    networks:
-      - saltnet
-
-volumes:
-  salt-pki:
-  salt-cache:
-  salt-logs:
-  salt-minion-1-pki:
-  salt-minion-1-cache:
-  salt-minion-2-pki:
-  salt-minion-2-cache:
-  salt-minion-3-pki:
-  salt-minion-3-cache:
-
-networks:
-  saltnet:
-    driver: bridge

@@ -1,11 +1,8 @@
-*.log
-*.tmp
-*.swp
-*~
-cache/
-__pycache__/
-*.pem
-*.key
-pki/
-*.pid
-*.sock
+# JetBrains Files
+.idea
+
+# File-based project format
+*.iws
+
+# IntelliJ
+out/
