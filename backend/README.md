@@ -98,24 +98,33 @@ pytest --cov=app --cov-report=term-missing
 
 ```
 backend/
-├── app/
-│   ├── api/v1/          # API endpoints
-│   │   ├── minions.py   # Minion endpoints
-│   │   ├── jobs.py      # Job endpoints
-│   │   └── grains.py    # Grains/Pillars endpoints
-│   ├── core/            # Core configuration
-│   │   └── config.py    # Settings and configuration
-│   ├── schemas/         # Pydantic models
-│   │   ├── minion.py
-│   │   ├── job.py
-│   │   └── grains.py
-│   ├── services/        # Business logic
-│   │   └── salt_api.py  # Salt API client
-│   └── main.py          # FastAPI application
-├── tests/               # Test suite
-│   ├── test_api.py      # API endpoint tests
+├── apps/                # Modular applications (faster-app pattern)
+│   ├── auth/           # Authentication
+│   ├── salt/           # Salt management (re-exports from app/api/v1)
+│   ├── audit/          # Audit logging
+│   ├── system/         # System endpoints
+│   └── webhooks/       # Webhook handlers
+├── schemas/            # Pydantic models (shared)
+│   ├── auth.py
+│   ├── minion.py
+│   ├── job.py
+│   └── ...
+├── services/           # Business logic (shared)
+│   └── salt_api.py     # Salt API client
+├── core/               # Core configuration
+│   └── config.py       # Settings (re-exports from root settings.py)
+├── app/                # Legacy API structure (for compatibility)
+│   ├── api/v1/         # API endpoints
+│   │   ├── minions.py  # Minion endpoints
+│   │   ├── jobs.py     # Job endpoints
+│   │   └── ...
+│   └── main.py         # FastAPI application
+├── tests/              # Test suite
+│   ├── test_api.py     # API endpoint tests
 │   └── test_salt_api.py # Salt API client tests
-└── pyproject.toml       # Project configuration
+├── main111.py          # Alternative main (faster-app pattern)
+├── settings.py         # Application settings
+└── pyproject.toml      # Project configuration
 ```
 
 ## Development
