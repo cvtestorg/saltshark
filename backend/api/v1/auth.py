@@ -8,7 +8,7 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 
-from app.schemas.auth import Token, User, UserCreate, UserInDB, UserUpdate
+from schemas.auth import Token, User, UserCreate, UserInDB, UserUpdate
 
 router = APIRouter()
 

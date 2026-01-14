@@ -5,7 +5,7 @@ from typing import Any
 
 from fastapi import APIRouter, Depends
 
-from app.api.v1.auth import get_current_active_user
+from api.v1.auth import get_current_active_user
 from schemas.auth import User
 from schemas.notification import Notification, NotificationSettings
 

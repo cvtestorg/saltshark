@@ -4,9 +4,9 @@ from typing import Any, cast
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from app.api.v1.auth import get_current_active_user
-from app.schemas.auth import User
-from app.schemas.compliance import (
+from api.v1.auth import get_current_active_user
+from schemas.auth import User
+from schemas.compliance import (
     ComplianceStatus,
     DriftDetection,
     FailedState,

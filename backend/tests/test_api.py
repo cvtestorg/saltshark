@@ -45,7 +45,7 @@ def test_list_minions(client: TestClient, api_base_url: str):
     }
 
     with patch(
-        "app.services.salt_api.salt_client.list_minions", new_callable=AsyncMock
+        "services.salt_api.salt_client.list_minions", new_callable=AsyncMock
     ) as mock_list:
         mock_list.return_value = mock_salt_response
         response = client.get(f"{api_base_url}/minions")
@@ -75,7 +75,7 @@ def test_list_jobs(client: TestClient, api_base_url: str):
     }
 
     with patch(
-        "app.services.salt_api.salt_client.list_jobs", new_callable=AsyncMock
+        "services.salt_api.salt_client.list_jobs", new_callable=AsyncMock
     ) as mock_list:
         mock_list.return_value = mock_salt_response
         response = client.get(f"{api_base_url}/jobs")
@@ -98,7 +98,7 @@ def test_execute_job(client: TestClient, api_base_url: str):
     }
 
     with patch(
-        "app.services.salt_api.salt_client.execute_command", new_callable=AsyncMock
+        "services.salt_api.salt_client.execute_command", new_callable=AsyncMock
     ) as mock_exec:
         mock_exec.return_value = mock_salt_response
         response = client.post(f"{api_base_url}/jobs/execute", json=job_request)

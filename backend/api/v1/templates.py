@@ -4,10 +4,10 @@ from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from app.api.v1.auth import get_current_active_user, require_role
+from api.v1.auth import get_current_active_user, require_role
 from schemas.auth import User
 from schemas.template import JobTemplate, JobTemplateCreate, JobTemplateUpdate
-from app.services.salt_api import SaltAPIClient
+from services.salt_api import SaltAPIClient
 
 router = APIRouter()
 

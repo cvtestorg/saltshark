@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, HTTPException
 
-from app.schemas.minion import MinionDetail, MinionList, MinionStatus
+from schemas.minion import MinionDetail, MinionList, MinionStatus
 from services.salt_api import salt_client
 
 router = APIRouter()

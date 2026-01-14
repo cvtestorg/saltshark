@@ -1,8 +1,8 @@
 """Salt management routes - imports from existing implementation"""
 from fastapi import APIRouter
 
-# Import existing routers from app structure
-from app.api.v1 import (
+# Import existing routers from api structure
+from api.v1 import (
     beacons,
     cloud,
     events,
@@ -41,19 +41,3 @@ router.include_router(ssh.router, tags=["ssh"])
 router.include_router(events.router, tags=["events"])
 router.include_router(mine.router, tags=["mine"])
 router.include_router(templates.router, prefix="/templates", tags=["templates"])
-
-
-@router.get("/")
-async def root() -> dict[str, str]:
-    """Root endpoint"""
-    return {
-        "message": "Welcome to SaltShark API",
-        "version": "0.1.0",
-        "docs": "/docs",
-    }
-
-
-@router.get("/health")
-async def health() -> dict[str, str]:
-    """Health check endpoint"""
-    return {"status": "healthy"}

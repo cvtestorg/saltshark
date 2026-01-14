@@ -2,7 +2,7 @@
 from fastapi import APIRouter
 
 # Import existing routers
-from app.api.v1 import audit, compliance, notifications
+from api.v1 import audit, compliance, notifications
 
 # Create combined router
 router = APIRouter(prefix="/api/v1")

@@ -48,6 +48,21 @@ def create_app() -> FastAPI:
     app.include_router(system_router, prefix="/api/v1", tags=["System"])
     app.include_router(webhooks_router, prefix="/api/v1", tags=["Webhooks"])
 
+    # Root endpoints
+    @app.get("/")
+    async def root() -> dict[str, str]:
+        """Root endpoint"""
+        return {
+            "message": "Welcome to SaltShark API",
+            "version": settings.version,
+            "docs": "/docs",
+        }
+
+    @app.get("/health")
+    async def health() -> dict[str, str]:
+        """Health check endpoint"""
+        return {"status": "healthy"}
+
     return app
 
 

@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 import pytest
 from fastapi.testclient import TestClient
 
-from app.api.v1.auth import (
+from api.v1.auth import (
     create_access_token,
     fake_users_db,
     get_password_hash,

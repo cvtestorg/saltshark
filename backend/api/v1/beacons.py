@@ -4,8 +4,8 @@ from typing import Any
 
 from fastapi import APIRouter, HTTPException
 
-from app.schemas.beacons import BeaconConfig
-from app.services.salt_api import salt_client
+from schemas.beacons import BeaconConfig
+from services.salt_api import salt_client
 
 router = APIRouter()
 

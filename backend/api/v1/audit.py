@@ -5,7 +5,7 @@ from typing import Any
 
 from fastapi import APIRouter, Depends, Query
 
-from app.api.v1.auth import require_role
+from api.v1.auth import require_role
 from schemas.audit import AuditLog
 from schemas.auth import User
 

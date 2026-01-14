@@ -55,7 +55,11 @@ If you have SaltStack already installed and configured, configure the backend to
 ```bash
 cd backend
 pip install -e .
-uvicorn app.main:app --reload --port 8000
+# Using faster-app (recommended)
+faster server start
+
+# Or using uvicorn directly
+uvicorn main:app --reload --port 8000
 ```
 
 The API will be available at http://localhost:8000
@@ -94,11 +98,12 @@ Execute Salt commands with an intuitive interface.
 ```
 saltshark/
 ├── backend/          # FastAPI backend (faster-app v0.1.7)
-│   ├── apps/         # Modular applications
+│   ├── apps/         # Modular applications (faster-app pattern)
+│   ├── api/          # API endpoints
 │   ├── schemas/      # Shared data models
 │   ├── services/     # Shared business logic
 │   ├── core/         # Core configuration
-│   ├── app/          # Legacy API (for compatibility)
+│   ├── main.py       # Application entry point
 │   └── tests/        # Backend tests
 │
 ├── saltstack/        # SaltStack testing environment
