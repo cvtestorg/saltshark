@@ -38,11 +38,15 @@ def create_app() -> FastAPI:
     from apps.auth.routes import router as auth_router
     from apps.salt.routes import router as salt_router
     from apps.audit.routes import router as audit_router
+    from apps.system.routes import router as system_router
+    from apps.webhooks.routes import router as webhooks_router
 
     # Include routers
     app.include_router(auth_router, prefix="/api/v1/auth", tags=["authentication"])
     app.include_router(salt_router)
     app.include_router(audit_router)
+    app.include_router(system_router, prefix="/api/v1", tags=["system"])
+    app.include_router(webhooks_router, prefix="/api/v1", tags=["webhooks"])
 
     return app
 

@@ -234,3 +234,19 @@ async def delete_user(
             return {"message": "User deleted successfully"}
     
     raise HTTPException(status_code=404, detail="User not found")
+
+
+@router.post("/logout")
+async def logout(current_user: User = Depends(get_current_active_user)) -> dict[str, str]:
+    """
+    Logout endpoint (for compatibility with rest_cherrypy).
+    
+    Note: JWT tokens are stateless, so this endpoint only returns a success message.
+    The client should discard the token. For real token revocation, implement a
+    token blacklist with Redis or database.
+    """
+    return {
+        "message": "Logged out successfully",
+        "user": current_user.username,
+        "note": "JWT token is stateless - please discard the token on client side"
+    }
