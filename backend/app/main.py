@@ -27,7 +27,7 @@ from app.api.v1 import (
     states,
     templates,
 )
-from app.core.config import settings
+from core.config import settings
 
 
 @asynccontextmanager

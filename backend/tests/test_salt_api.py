@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from app.services.salt_api import SaltAPIClient
+from services.salt_api import SaltAPIClient
 
 
 @pytest.mark.asyncio

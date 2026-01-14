@@ -6,8 +6,8 @@ from typing import Any
 from fastapi import APIRouter, Depends, Query
 
 from app.api.v1.auth import require_role
-from app.schemas.audit import AuditLog
-from app.schemas.auth import User
+from schemas.audit import AuditLog
+from schemas.auth import User
 
 router = APIRouter()
 

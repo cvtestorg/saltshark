@@ -7,7 +7,7 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 
-from app.schemas.auth import Token, User, UserCreate, UserInDB, UserUpdate
+from schemas.auth import Token, User, UserCreate, UserInDB, UserUpdate
 
 router = APIRouter()
 
@@ -243,7 +243,7 @@ async def logout(current_user: User = Depends(get_current_active_user)) -> dict[
     
     Note: JWT tokens are stateless, so this endpoint only returns a success message.
     The client should discard the token. For real token revocation, implement a
-    token blacklist with Redis or database.
+    token blacklist with database.
     """
     return {
         "message": "Logged out successfully",

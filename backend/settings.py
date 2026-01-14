@@ -35,7 +35,7 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = Field(default=30)
     
     # Database
-    database_url: str = Field(default="sqlite://./saltshark.db")
+    database_url: str = Field(default="postgresql://saltshark:password@localhost:5432/saltshark_dev")
     
     # Middleware
     enable_gzip: bool = Field(default=True)
@@ -43,6 +43,42 @@ class Settings(BaseSettings):
     
     # Route validation
     validate_routes: bool = Field(default=True)
+    
+    # Backward compatibility properties (uppercase versions)
+    @property
+    def SALT_API_URL(self) -> str:
+        """Backward compatibility for uppercase SALT_API_URL"""
+        return self.salt_api_url
+    
+    @property
+    def SALT_API_USER(self) -> str:
+        """Backward compatibility for uppercase SALT_API_USER"""
+        return self.salt_api_user
+    
+    @property
+    def SALT_API_PASSWORD(self) -> str:
+        """Backward compatibility for uppercase SALT_API_PASSWORD"""
+        return self.salt_api_password
+    
+    @property
+    def CORS_ORIGINS(self) -> list[str]:
+        """Backward compatibility for uppercase CORS_ORIGINS"""
+        return self.cors_allow_origins
+    
+    @property
+    def SECRET_KEY(self) -> str:
+        """Backward compatibility for uppercase SECRET_KEY"""
+        return self.secret_key
+    
+    @property
+    def ALGORITHM(self) -> str:
+        """Backward compatibility for uppercase ALGORITHM"""
+        return self.jwt_algorithm
+    
+    @property
+    def ACCESS_TOKEN_EXPIRE_MINUTES(self) -> int:
+        """Backward compatibility for uppercase ACCESS_TOKEN_EXPIRE_MINUTES"""
+        return self.access_token_expire_minutes
 
 
 # Create settings instance

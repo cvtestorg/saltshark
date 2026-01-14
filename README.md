@@ -27,7 +27,28 @@ A modern, beautiful web UI for SaltStack/SaltProject built with Next.js 16 and F
 
 - Python 3.12+
 - Node.js 18+
-- **SaltStack installation with Salt API enabled**
+- **SaltStack installation with Salt API enabled** OR Docker/Docker Compose
+
+### SaltStack Testing Environment (Option 1: Docker)
+
+Use the included docker-compose setup for testing:
+
+```bash
+cd saltstack
+./start.sh
+```
+
+This starts:
+- Salt Master with rest_cherrypy API on port 8000
+- 3 Salt Minions (minion-1, minion-2, minion-3)
+
+API credentials: `saltapi` / `saltapi`
+
+For more options, see [saltstack/README.md](saltstack/README.md)
+
+### SaltStack (Option 2: Existing Installation)
+
+If you have SaltStack already installed and configured, configure the backend to connect to your Salt API.
 
 ### Backend Setup
 
@@ -72,13 +93,18 @@ Execute Salt commands with an intuitive interface.
 
 ```
 saltshark/
-├── backend/          # FastAPI backend
-│   ├── app/
-│   │   ├── api/      # REST endpoints
-│   │   ├── core/     # Configuration
-│   │   ├── schemas/  # Data models
-│   │   └── services/ # Business logic
+├── backend/          # FastAPI backend (faster-app v0.1.7)
+│   ├── apps/         # Modular applications
+│   ├── schemas/      # Shared data models
+│   ├── services/     # Shared business logic
+│   ├── core/         # Core configuration
+│   ├── app/          # Legacy API (for compatibility)
 │   └── tests/        # Backend tests
+│
+├── saltstack/        # SaltStack testing environment
+│   ├── docker-compose.yml  # Salt Master + Minions
+│   ├── start.sh     # Quick start script
+│   └── master/      # Salt Master config
 │
 └── frontend/         # Next.js frontend
     ├── app/          # Pages and layouts

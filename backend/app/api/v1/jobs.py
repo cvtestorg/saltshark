@@ -4,8 +4,8 @@ from typing import Any
 
 from fastapi import APIRouter, HTTPException
 
-from app.schemas.job import JobExecuteRequest, JobList, JobResult, JobStatus
-from app.services.salt_api import salt_client
+from schemas.job import JobExecuteRequest, JobList, JobResult, JobStatus
+from services.salt_api import salt_client
 
 router = APIRouter()
 
