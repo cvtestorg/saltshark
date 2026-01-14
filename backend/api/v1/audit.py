@@ -3,7 +3,7 @@
 from datetime import UTC, datetime
 from typing import Any
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 
 from api.v1.auth import require_role
 from schemas.audit import AuditLog
@@ -118,6 +118,3 @@ async def create_audit_log(
 
     audit_logs_db.append(audit_log)
     return audit_log
-
-
-from fastapi import HTTPException
