@@ -1,4 +1,4 @@
-"""Application settings for SaltShark"""
+"""Application settings for SaltShark - faster-app configuration"""
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 

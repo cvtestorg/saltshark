@@ -7,7 +7,7 @@ from typing import Any
 
 import httpx
 
-from core.config import settings
+from config.settings import settings
 
 
 class SaltAPIClient:

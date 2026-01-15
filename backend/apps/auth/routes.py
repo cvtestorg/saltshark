@@ -7,14 +7,15 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 
-from schemas.auth import Token, User, UserCreate, UserInDB, UserUpdate
+from apps.auth.schemas import Token, User, UserCreate, UserInDB, UserUpdate
+from config.settings import settings
 
 router = APIRouter()
 
-# Security configuration
-SECRET_KEY = "your-secret-key-here-change-in-production"  # TODO: Move to settings
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+# Security configuration from settings
+SECRET_KEY = settings.secret_key
+ALGORITHM = settings.jwt_algorithm
+ACCESS_TOKEN_EXPIRE_MINUTES = settings.access_token_expire_minutes
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
