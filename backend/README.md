@@ -44,14 +44,9 @@ SECRET_KEY=your-secret-key
 
 ### Development
 
-Using faster-app (recommended):
+Using faster-app (recommended - auto-discovers routes in apps/):
 ```bash
 faster server start
-```
-
-Or using uvicorn directly:
-```bash
-uvicorn main:app --reload --port 8000
 ```
 
 ### Production
@@ -59,11 +54,6 @@ uvicorn main:app --reload --port 8000
 Using faster-app:
 ```bash
 faster server start --host 0.0.0.0 --port 8000
-```
-
-Or using uvicorn directly:
-```bash
-uvicorn main:app --host 0.0.0.0 --port 8000 --workers 4
 ```
 
 ## API Documentation
@@ -112,29 +102,26 @@ pytest --cov=app --cov-report=term-missing
 backend/
 ├── apps/                # Modular applications (faster-app pattern)
 │   ├── auth/           # Authentication
-│   ├── salt/           # Salt management (aggregates all salt endpoints)
+│   │   ├── routes.py   # Auth endpoints
+│   │   └── schemas.py  # Auth schemas
+│   ├── salt/           # Salt management (all salt endpoints)
+│   │   ├── routes.py   # 48 consolidated salt endpoints
+│   │   ├── schemas.py  # All salt schemas
+│   │   └── salt_api_client.py  # Salt API service client
 │   ├── audit/          # Audit logging
+│   │   ├── routes.py   # Audit/compliance/notifications
+│   │   └── schemas.py  # Audit schemas
 │   ├── system/         # System endpoints
 │   └── webhooks/       # Webhook handlers
-├── api/                # API endpoint implementations
-│   └── v1/             # API version 1 endpoints
-│       ├── minions.py  # Minion endpoints
-│       ├── jobs.py     # Job endpoints
-│       └── ...         # Other endpoints
-├── schemas/            # Pydantic models (shared)
-│   ├── auth.py
-│   ├── minion.py
-│   ├── job.py
-│   └── ...
-├── services/           # Business logic (shared)
-│   └── salt_api.py     # Salt API client
-├── core/               # Core configuration
-│   └── config.py       # Settings (re-exports from root settings.py)
+├── config/             # Configuration (faster-app convention)
+│   └── settings.py     # Application settings
+├── core/               # Core utilities (backward compat)
+│   └── config.py       # Re-exports settings
+├── middleware/         # Middleware
 ├── tests/              # Test suite
 │   ├── test_api.py     # API endpoint tests
+│   ├── test_auth.py    # Auth tests
 │   └── test_salt_api.py # Salt API client tests
-├── main.py             # Application entry point (faster-app compatible)
-├── settings.py         # Application settings
 └── pyproject.toml      # Project configuration
 ```
 
