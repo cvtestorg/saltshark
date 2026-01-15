@@ -27,7 +27,7 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["apps*", "config*", "core*", "middleware*"]
+include = ["apps*", "config*", "middleware*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
