@@ -1,55 +1,37 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import useSWR from "swr";
 import { DashboardLayout } from "@/components/dashboard-layout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Server, MoreHorizontal, RefreshCw, Search, Terminal } from "lucide-react";
 import { minionsAPI } from "@/lib/api";
-import { Server, RefreshCw } from "lucide-react";
-import type { MinionStatus } from "@/types";
+import { useState } from "react";
+import Link from "next/link";
 
 export default function MinionsPage() {
-  const [minions, setMinions] = useState<MinionStatus[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  
+  const { data, isLoading, isValidating, mutate } = useSWR(
+    "/api/v1/minions",
+    () => minionsAPI.list()
+  );
 
-  const fetchMinions = async () => {
-    setLoading(true);
-    try {
-      const data = await minionsAPI.list();
-      setMinions(data.minions);
-    } catch (error) {
-      console.error("Failed to fetch minions:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const minions = data?.data || {};
+  const isRefreshing = isLoading || isValidating;
 
-  useEffect(() => {
-    fetchMinions();
-  }, []);
-
-  const getStatusColor = (status: string | null) => {
-    switch (status) {
-      case "up":
-        return "bg-green-500";
-      case "down":
-        return "bg-red-500";
-      default:
-        return "bg-gray-500";
-    }
-  };
-
-  const getStatusBadge = (status: string | null) => {
-    switch (status) {
-      case "up":
-        return <Badge className="bg-green-500">Online</Badge>;
-      case "down":
-        return <Badge variant="destructive">Offline</Badge>;
-      default:
-        return <Badge variant="secondary">Unknown</Badge>;
-    }
-  };
+  const filteredMinions = Object.entries(minions).filter(([id]) =>
+    id.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <DashboardLayout>
@@ -58,71 +40,108 @@ export default function MinionsPage() {
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Minions</h1>
             <p className="text-muted-foreground">
-              Manage and monitor your Salt minions
+              Monitor and manage connected minions
             </p>
           </div>
-          <Button onClick={fetchMinions} disabled={loading}>
-            <RefreshCw className={`mr-2 h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+          <Button onClick={() => mutate()} disabled={isRefreshing}>
+             <RefreshCw className={`mr-2 h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} />
             Refresh
           </Button>
         </div>
 
-        {loading && minions.length === 0 ? (
+        <div className="flex items-center space-x-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="search"
+              placeholder="Search minions..."
+              className="pl-8"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+        </div>
+
+        {isLoading ? (
           <div className="flex items-center justify-center py-12">
             <RefreshCw className="h-8 w-8 animate-spin text-muted-foreground" />
           </div>
         ) : (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {minions.map((minion) => (
-              <Card key={minion.id} className="hover:shadow-lg transition-shadow">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {filteredMinions.map(([id, grains]: [string, any]) => (
+              <Card key={id}>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <div className="flex items-center space-x-2">
-                    <Server className="h-5 w-5 text-muted-foreground" />
-                    <CardTitle className="text-lg font-semibold">
-                      {minion.id}
-                    </CardTitle>
-                  </div>
-                  {getStatusBadge(minion.status)}
+                  <CardTitle className="text-sm font-medium">
+                    {id}
+                  </CardTitle>
+                  <Server className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">OS:</span>
-                      <span className="font-medium">
-                        {minion.os || "Unknown"}
-                      </span>
+                  <div className="text-2xl font-bold mb-2">
+                    {grains.os || "Unknown OS"}
+                  </div>
+                  <div className="space-y-2 text-sm text-muted-foreground">
+                  <div className="flex justify-between">
+                      <span>OS Release:</span>
+                      <span className="font-medium text-foreground">{grains.osrelease || "-"}</span>
                     </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Release:</span>
-                      <span className="font-medium">
-                        {minion.osrelease || "Unknown"}
-                      </span>
+                    <div className="flex justify-between">
+                      <span>Kernel:</span>
+                      <span className="font-medium text-foreground">{grains.kernel || "-"}</span>
                     </div>
-                    <div className="mt-4 flex gap-2">
-                      <Button variant="outline" size="sm" className="flex-1">
-                        Details
-                      </Button>
-                      <Button variant="outline" size="sm" className="flex-1">
-                        Execute
-                      </Button>
+                    <div className="flex justify-between">
+                       <span>IPv4:</span>
+                       <span className="font-medium text-foreground">
+                         {Array.isArray(grains.ipv4) 
+                           ? grains.ipv4.filter((ip: string) => ip !== '127.0.0.1').join(', ') 
+                           : grains.ipv4 || "-"}
+                       </span>
                     </div>
+                     <div className="flex justify-between">
+                      <span>Salt Version:</span>
+                      <span className="font-medium text-foreground">{grains.saltversion || "-"}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-4 flex gap-2">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" className="w-full">
+                          <MoreHorizontal className="mr-2 h-4 w-4" />
+                          Actions
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuItem asChild>
+                            <Link href={`/states?target=${id}`}>Apply State</Link>
+                        </DropdownMenuItem>
+                         <DropdownMenuItem asChild>
+                            <Link href={`/jobs?target=${id}`}>View Jobs</Link>
+                        </DropdownMenuItem>
+                         <DropdownMenuItem asChild>
+                            <Link href={`/advanced?target=${id}`}>Run Command</Link>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                 </CardContent>
               </Card>
             ))}
+            
+            {filteredMinions.length === 0 && (
+                 <div className="col-span-full flex flex-col items-center justify-center py-12 text-muted-foreground">
+                  <Server className="h-12 w-12 mb-4" />
+                  <p>No minions found matching your search.</p>
+                </div>
+            )}
+             {!filteredMinions.length && !searchTerm && (
+                <div className="col-span-full flex flex-col items-center justify-center py-12 text-muted-foreground">
+                  <Server className="h-12 w-12 mb-4" />
+                  <p>No minions connected.</p>
+                </div>
+            )}
           </div>
-        )}
-
-        {!loading && minions.length === 0 && (
-          <Card>
-            <CardContent className="flex flex-col items-center justify-center py-12">
-              <Server className="h-12 w-12 text-muted-foreground mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No minions found</h3>
-              <p className="text-sm text-muted-foreground text-center">
-                No minions are currently registered with the Salt master.
-              </p>
-            </CardContent>
-          </Card>
         )}
       </div>
     </DashboardLayout>

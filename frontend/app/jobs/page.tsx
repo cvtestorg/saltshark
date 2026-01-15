@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import useSWR from "swr";
 import { DashboardLayout } from "@/components/dashboard-layout";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -15,44 +15,37 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { PlayCircle, RefreshCw, Terminal } from "lucide-react";
 import { jobsAPI } from "@/lib/api";
-import { PlayCircle, RefreshCw, Clock, CheckCircle2, XCircle } from "lucide-react";
-import type { JobStatus, JobExecuteRequest } from "@/types";
+import { useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 
-export default function JobsPage() {
-  const [jobs, setJobs] = useState<JobStatus[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [executing, setExecuting] = useState(false);
-  const [jobRequest, setJobRequest] = useState<JobExecuteRequest>({
-    target: "*",
-    function: "test.ping",
+function JobsContent() {
+  const searchParams = useSearchParams();
+  const target = searchParams.get("target") || "*";
+  
+  const [jobRequest, setJobRequest] = useState({
+    target: target,
+    function: "",
     args: [],
   });
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [executing, setExecuting] = useState(false);
 
-  const fetchJobs = async () => {
-    setLoading(true);
-    try {
-      const data = await jobsAPI.list();
-      setJobs(data.jobs);
-    } catch (error) {
-      console.error("Failed to fetch jobs:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data, isLoading, isValidating, mutate } = useSWR(
+    "/api/v1/jobs",
+    () => jobsAPI.list()
+  );
 
-  useEffect(() => {
-    fetchJobs();
-  }, []);
+  const jobs = data?.data || [];
+  const isRefreshing = isLoading || isValidating;
 
   const handleExecuteJob = async () => {
     setExecuting(true);
     try {
       await jobsAPI.execute(jobRequest);
       setDialogOpen(false);
-      // Refresh jobs list after execution
-      await fetchJobs();
+      mutate();
     } catch (error) {
       console.error("Failed to execute job:", error);
     } finally {
@@ -61,34 +54,15 @@ export default function JobsPage() {
   };
 
   const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "completed":
-        return <CheckCircle2 className="h-4 w-4 text-green-500" />;
-      case "running":
-        return <Clock className="h-4 w-4 text-blue-500 animate-pulse" />;
-      case "failed":
-        return <XCircle className="h-4 w-4 text-red-500" />;
-      default:
-        return <Clock className="h-4 w-4 text-gray-500" />;
-    }
+    return <Terminal className="h-5 w-5 text-blue-500" />;
   };
 
   const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "completed":
-        return <Badge className="bg-green-500">Completed</Badge>;
-      case "running":
-        return <Badge className="bg-blue-500">Running</Badge>;
-      case "failed":
-        return <Badge variant="destructive">Failed</Badge>;
-      default:
-        return <Badge variant="secondary">Unknown</Badge>;
-    }
+    return <Badge>Completed</Badge>;
   };
 
   return (
-    <DashboardLayout>
-      <div className="space-y-6">
+    <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Jobs</h1>
@@ -97,8 +71,8 @@ export default function JobsPage() {
             </p>
           </div>
           <div className="flex gap-2">
-            <Button onClick={fetchJobs} disabled={loading} variant="outline">
-              <RefreshCw className={`mr-2 h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+            <Button onClick={() => mutate()} disabled={isRefreshing} variant="outline">
+               <RefreshCw className={`mr-2 h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} />
               Refresh
             </Button>
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -182,13 +156,13 @@ export default function JobsPage() {
           </div>
         </div>
 
-        {loading && jobs.length === 0 ? (
+        {isLoading ? (
           <div className="flex items-center justify-center py-12">
             <RefreshCw className="h-8 w-8 animate-spin text-muted-foreground" />
           </div>
         ) : (
           <div className="space-y-4">
-            {jobs.map((job) => (
+            {jobs.map((job: any) => (
               <Card key={job.jid}>
                 <CardHeader>
                   <div className="flex items-center justify-between">
@@ -228,7 +202,7 @@ export default function JobsPage() {
           </div>
         )}
 
-        {!loading && jobs.length === 0 && (
+        {!isLoading && jobs.length === 0 && (
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-12">
               <PlayCircle className="h-12 w-12 text-muted-foreground mb-4" />
@@ -240,6 +214,16 @@ export default function JobsPage() {
           </Card>
         )}
       </div>
-    </DashboardLayout>
   );
 }
+
+export default function JobsPage() {
+    return (
+        <DashboardLayout>
+            <Suspense fallback={<div>Loading...</div>}>
+                <JobsContent />
+            </Suspense>
+        </DashboardLayout>
+    );
+}
+

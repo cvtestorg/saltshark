@@ -48,6 +48,17 @@ class SaltAPIClient:
         response = await self.client.request(
             method, f"{self.base_url}{endpoint}", headers=headers, **kwargs
         )
+
+        if response.status_code == 401:
+            # Token might be expired, retry once
+            await self.login()
+            headers["X-Auth-Token"] = self.token
+            response = await self.client.request(
+                method, f"{self.base_url}{endpoint}", headers=headers, **kwargs
+            )
+        
+        response.raise_for_status()
+        return response.json()
         response.raise_for_status()
         result: dict[str, Any] = response.json()
         return result

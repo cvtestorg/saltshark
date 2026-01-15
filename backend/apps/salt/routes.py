@@ -3,12 +3,25 @@
 from datetime import UTC, datetime
 from typing import Any
 
-from fastapi import APIRouter, HTTPException, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 
-from apps.salt.schemas import *
-from apps.salt.salt_api_client import salt_client
 from apps.auth.routes import get_current_active_user, require_role
 from apps.auth.schemas import User
+from apps.salt.salt_api_client import salt_client
+from apps.salt.schemas import (
+    GrainsData,
+    HighstateRequest,
+    JobExecuteRequest,
+    JobList,
+    JobResult,
+    JobStatus,
+    MinionDetail,
+    MinionList,
+    MinionStatus,
+    PillarsData,
+    ScheduleRequest,
+    StateApplyRequest,
+)
 
 router = APIRouter(prefix="/api/v1", tags=["salt"])
 
@@ -867,4 +880,3 @@ async def list_categories(
         if template.is_public or template.created_by == current_user.username:
             categories.add(template.category)
     return sorted(categories)
-

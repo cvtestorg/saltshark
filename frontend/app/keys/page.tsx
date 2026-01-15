@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import useSWR from "swr";
 import { DashboardLayout } from "@/components/dashboard-layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,30 +17,22 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Key, CheckCircle, XCircle, Trash2, RefreshCw, Clock } from "lucide-react";
+import { keysAPI } from "@/lib/api";
+import React from "react";
 
 export default function KeysPage() {
-  const [keys, setKeys] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
+  const { data, isLoading, isValidating, mutate } = useSWR(
+    "/api/v1/keys",
+    () => keysAPI.list()
+  );
 
-  const fetchKeys = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch("http://localhost:8000/api/v1/keys");
-      const data = await response.json();
-      setKeys(data.data);
-    } catch (error) {
-      console.error("Failed to fetch keys:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const keys = data?.data || {};
+  const isRefreshing = isLoading || isValidating;
 
   const acceptKey = async (minionId: string) => {
     try {
-      await fetch(`http://localhost:8000/api/v1/keys/${minionId}/accept`, {
-        method: "POST",
-      });
-      fetchKeys();
+      await keysAPI.accept(minionId);
+      mutate();
     } catch (error) {
       console.error("Failed to accept key:", error);
     }
@@ -48,10 +40,8 @@ export default function KeysPage() {
 
   const rejectKey = async (minionId: string) => {
     try {
-      await fetch(`http://localhost:8000/api/v1/keys/${minionId}/reject`, {
-        method: "POST",
-      });
-      fetchKeys();
+      await keysAPI.reject(minionId);
+      mutate();
     } catch (error) {
       console.error("Failed to reject key:", error);
     }
@@ -59,18 +49,12 @@ export default function KeysPage() {
 
   const deleteKey = async (minionId: string) => {
     try {
-      await fetch(`http://localhost:8000/api/v1/keys/${minionId}`, {
-        method: "DELETE",
-      });
-      fetchKeys();
+      await keysAPI.delete(minionId);
+      mutate();
     } catch (error) {
       console.error("Failed to delete key:", error);
     }
   };
-
-  useEffect(() => {
-    fetchKeys();
-  }, []);
 
   const renderKeyList = (title: string, keyList: string[], status: string, icon: React.ReactNode, badgeVariant: any) => {
     if (!keyList || keyList.length === 0) return null;
@@ -99,7 +83,7 @@ export default function KeysPage() {
                   <Badge variant={badgeVariant}>{status}</Badge>
                 </div>
                 <div className="flex gap-2">
-                  {status === "pending" && (
+                  {status === "unaccepted" && (
                     <>
                       <Button
                         size="sm"
@@ -126,7 +110,7 @@ export default function KeysPage() {
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
-                        <AlertDialogTitle>Delete Key</AlertDialogTitle>
+                        <AlertDialogTitle>Delete Key?</AlertDialogTitle>
                         <AlertDialogDescription>
                           Are you sure you want to delete the key for {minionId}?
                           This action cannot be undone.
@@ -154,62 +138,61 @@ export default function KeysPage() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Minion Keys</h1>
+            <h1 className="text-3xl font-bold tracking-tight">Keys</h1>
             <p className="text-muted-foreground">
               Manage minion authentication keys
             </p>
           </div>
-          <Button onClick={fetchKeys} disabled={loading}>
-            <RefreshCw className={`mr-2 h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+          <Button onClick={() => mutate()} disabled={isRefreshing}>
+          <RefreshCw className={`mr-2 h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} />
             Refresh
           </Button>
         </div>
 
-        {loading && !keys ? (
+        {isLoading ? (
           <div className="flex items-center justify-center py-12">
             <RefreshCw className="h-8 w-8 animate-spin text-muted-foreground" />
           </div>
-        ) : keys ? (
-          <div className="space-y-4">
+        ) : (
+          <div className="grid gap-6">
             {renderKeyList(
-              "Pending Keys",
-              keys.return?.[0]?.data?.return?.minions_pre || [],
-              "pending",
+              "Unaccepted Keys",
+              keys.minions_pre || [],
+              "unaccepted",
               <Clock className="h-5 w-5 text-yellow-500" />,
-              "outline"
+              "secondary"
             )}
             {renderKeyList(
               "Accepted Keys",
-              keys.return?.[0]?.data?.return?.minions || [],
+              keys.minions || [],
               "accepted",
               <CheckCircle className="h-5 w-5 text-green-500" />,
               "default"
             )}
             {renderKeyList(
-              "Rejected Keys",
-              keys.return?.[0]?.data?.return?.minions_rejected || [],
-              "rejected",
+              "Denied Keys",
+              keys.minions_denied || [],
+              "denied",
               <XCircle className="h-5 w-5 text-red-500" />,
               "destructive"
             )}
             {renderKeyList(
-              "Denied Keys",
-              keys.return?.[0]?.data?.return?.minions_denied || [],
-              "denied",
-              <XCircle className="h-5 w-5 text-gray-500" />,
-              "secondary"
+              "Rejected Keys",
+              keys.minions_rejected || [],
+              "rejected",
+              <XCircle className="h-5 w-5 text-red-500" />,
+              "destructive"
+            )}
+            
+            {!keys.minions && !keys.minions_pre && !isLoading && (
+               <Card>
+                <CardContent className="flex flex-col items-center justify-center py-12">
+                  <Key className="h-12 w-12 text-muted-foreground mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">No keys found</h3>
+                </CardContent>
+              </Card>
             )}
           </div>
-        ) : (
-          <Card>
-            <CardContent className="flex flex-col items-center justify-center py-12">
-              <Key className="h-12 w-12 text-muted-foreground mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No Keys</h3>
-              <p className="text-sm text-muted-foreground text-center">
-                No minion keys found
-              </p>
-            </CardContent>
-          </Card>
         )}
       </div>
     </DashboardLayout>
