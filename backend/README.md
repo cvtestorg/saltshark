@@ -115,8 +115,6 @@ backend/
 │   └── webhooks/       # Webhook handlers
 ├── config/             # Configuration (faster-app convention)
 │   └── settings.py     # Application settings
-├── core/               # Core utilities (backward compat)
-│   └── config.py       # Re-exports settings
 ├── middleware/         # Middleware
 ├── tests/              # Test suite
 │   ├── test_api.py     # API endpoint tests
