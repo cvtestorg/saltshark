@@ -1,5 +1,5 @@
 """Application configuration - Re-exports settings for backward compatibility"""
 
-from settings import settings
+from config.settings import settings
 
 __all__ = ["settings"]

@@ -5,7 +5,7 @@ from typing import Any
 from fastapi import APIRouter, Depends
 
 from apps.auth.routes import get_current_active_user
-from schemas.auth import User
+from apps.auth.schemas import User
 
 router = APIRouter()
 

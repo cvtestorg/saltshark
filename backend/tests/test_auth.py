@@ -5,13 +5,13 @@ from datetime import datetime, timezone
 import pytest
 from fastapi.testclient import TestClient
 
-from app.api.v1.auth import (
+from apps.auth.routes import (
     create_access_token,
     fake_users_db,
     get_password_hash,
     verify_password,
 )
-from schemas.auth import UserInDB
+from apps.auth.schemas import UserInDB
 
 
 @pytest.fixture(autouse=True)

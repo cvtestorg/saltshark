@@ -44,14 +44,16 @@ SECRET_KEY=your-secret-key
 
 ### Development
 
+Using faster-app (recommended - auto-discovers routes in apps/):
 ```bash
-uvicorn app.main:app --reload --port 8000
+faster server start
 ```
 
 ### Production
 
+Using faster-app:
 ```bash
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
+faster server start --host 0.0.0.0 --port 8000
 ```
 
 ## API Documentation
@@ -100,30 +102,26 @@ pytest --cov=app --cov-report=term-missing
 backend/
 ├── apps/                # Modular applications (faster-app pattern)
 │   ├── auth/           # Authentication
-│   ├── salt/           # Salt management (re-exports from app/api/v1)
+│   │   ├── routes.py   # Auth endpoints
+│   │   └── schemas.py  # Auth schemas
+│   ├── salt/           # Salt management (all salt endpoints)
+│   │   ├── routes.py   # 48 consolidated salt endpoints
+│   │   ├── schemas.py  # All salt schemas
+│   │   └── salt_api_client.py  # Salt API service client
 │   ├── audit/          # Audit logging
+│   │   ├── routes.py   # Audit/compliance/notifications
+│   │   └── schemas.py  # Audit schemas
 │   ├── system/         # System endpoints
 │   └── webhooks/       # Webhook handlers
-├── schemas/            # Pydantic models (shared)
-│   ├── auth.py
-│   ├── minion.py
-│   ├── job.py
-│   └── ...
-├── services/           # Business logic (shared)
-│   └── salt_api.py     # Salt API client
-├── core/               # Core configuration
-│   └── config.py       # Settings (re-exports from root settings.py)
-├── app/                # Legacy API structure (for compatibility)
-│   ├── api/v1/         # API endpoints
-│   │   ├── minions.py  # Minion endpoints
-│   │   ├── jobs.py     # Job endpoints
-│   │   └── ...
-│   └── main.py         # FastAPI application
+├── config/             # Configuration (faster-app convention)
+│   └── settings.py     # Application settings
+├── core/               # Core utilities (backward compat)
+│   └── config.py       # Re-exports settings
+├── middleware/         # Middleware
 ├── tests/              # Test suite
 │   ├── test_api.py     # API endpoint tests
+│   ├── test_auth.py    # Auth tests
 │   └── test_salt_api.py # Salt API client tests
-├── main111.py          # Alternative main (faster-app pattern)
-├── settings.py         # Application settings
 └── pyproject.toml      # Project configuration
 ```
 
